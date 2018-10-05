@@ -35,8 +35,8 @@ class TestNtkHttpApi(unittest.TestCase):
             elif user:
                 user_type = 'data_user'
             self.ntkc.call(method='user_register',
-                               data={'user_id': str(i), 'user_type': user_type, 'user_metadata': {}},
-                               user_type='anon')
+                           data={'user_id': str(i), 'user_type': user_type, 'user_metadata': {}},
+                           user_type='anon')
 
 
     def delete_many(self, n, owner=False, user=False):
@@ -47,8 +47,8 @@ class TestNtkHttpApi(unittest.TestCase):
             elif user:
                 user_type = 'data_user'
             self.ntkc.call(method='user_delete',
-                               data={'user_id': user_id, 'user_type': user_type},
-                               user_type='admin')
+                           data={'user_id': user_id, 'user_type': user_type},
+                           user_type='admin')
 
 
     def test_A_user_register(self):

@@ -95,23 +95,23 @@ class PgNeedToKnowClient(object):
         pass
 
 
-    def table_describe(self, table_name, table_description):
+    def table_describe(self, endpoint, data, token):
         pass
 
 
-    def table_describe_columns(self, table_name, column_descriptions):
+    def table_describe_columns(self, endpoint, data, token):
         pass
 
 
-    def table_metadata(self, table_name):
+    def table_metadata(self, endpoint, data, token):
         pass
 
 
-    def table_group_access_grant(self, table_name, group_name):
+    def table_group_access_grant(self, endpoint, data, token):
         pass
 
 
-    def table_group_access_revoke(self, table_name, group_name):
+    def table_group_access_revoke(self, endpoint, data, token):
         pass
 
     # user functions
@@ -122,15 +122,15 @@ class PgNeedToKnowClient(object):
         return self._http_post_unauthenticated(endpoint, payload=data)
 
 
-    def user_group_remove(self, group_name):
+    def user_group_remove(self, endpoint, data, token):
         pass
 
 
-    def user_groups(self):
+    def user_groups(self, endpoint, data, token):
         pass
 
 
-    def user_delete_data(self):
+    def user_delete_data(self, endpoint, data, token):
         pass
 
 
@@ -140,80 +140,80 @@ class PgNeedToKnowClient(object):
 
     # group functions
 
-    def group_create(self, group_name, group_metadata):
+    def group_create(self, endpoint, data, token):
         pass
 
 
-    def group_add_members(self):
+    def group_add_members(self, endpoint, data, token):
         pass
 
 
-    def _group_add_members_members(self, group_name, members):
+    def _group_add_members_members(self, endpoint, data, token):
         pass
 
 
-    def _group_add_members_metadata(self, group_name, group_metadata):
+    def _group_add_members_metadata(self, endpoint, data, token):
         pass
 
 
-    def _group_add_members_all_owners(self, group_name):
+    def _group_add_members_all_owners(self, endpoint, data, token):
         pass
 
 
-    def _group_add_members_all_users(self, group_name):
+    def _group_add_members_all_users(self, endpoint, data, token):
         pass
 
 
-    def _group_add_members_all(self, group_name):
+    def _group_add_members_all(self, endpoint, data, token):
         pass
 
 
-    def group_list_members(self, group_name):
+    def group_list_members(self, endpoint, data, token):
         pass
 
 
-    def group_remove_members(self, group_name):
+    def group_remove_members(self, endpoint, data, token):
         pass
 
 
-    def group_delete(self, group_name):
+    def group_delete(self, endpoint, data, token):
         pass
 
     # informational views, tables, and event logs
 
-    def get_table_overview(self):
+    def get_table_overview(self, endpoint, data, token):
         pass
 
 
-    def get_user_registrations(self):
+    def get_user_registrations(self, endpoint, data, token):
         pass
 
 
-    def get_groups(self):
+    def get_groups(self, endpoint, data, token):
         pass
 
 
-    def get_event_log_user_group_removals(self):
+    def get_event_log_user_group_removals(self, endpoint, data, token):
         pass
 
 
-    def get_event_log_user_data_deletions(self):
+    def get_event_log_user_data_deletions(self, endpoint, data, token):
         pass
 
 
-    def get_event_log_data_access(self):
+    def get_event_log_data_access(self, endpoint, data, token):
         pass
 
 
-    def get_event_log_access_control(self):
+    def get_event_log_access_control(self, endpoint, data, token):
         pass
 
     # utility functions (not in the SQL API)
 
-    def post_data(self, table, data):
+    def post_data(self, endpoint, data, token):
         pass
 
 
-    def get_data(self, table):
+    def get_data(self, endpoint, token):
         pass
 
