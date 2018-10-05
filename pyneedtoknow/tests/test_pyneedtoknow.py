@@ -14,9 +14,31 @@ TABLES = {
             {'name': 'country', 'type': 'text'}
         ],
         'description': 'personal and contact information'},
-    't2': {},
-    't3': {},
-    't4': {},
+    't2': {
+        'table_name': 't2',
+        'columns': [
+            {'name': 'votes', 'type': 'text'},
+            {'name': 'orientation', 'type': 'text'},
+            {'name': 'outlook', 'type': 'text'},
+        ],
+        'description': 'political beliefs'
+    },
+    't3': {
+        'table_name': 't3',
+        'columns': [
+            {'name': 'ideological_view', 'type': 'text'},
+            {'name': 'inflation_expectation', 'type': 'int'},
+        ],
+        'description': 'economic beliefs'
+    },
+    't4': {
+        'table_name': 't4',
+        'columns': [
+            {'name': 'has_chronic_disease', 'type': 'text'},
+            {'name': 'has_allergy', 'type': 'text'},
+        ],
+        'description': 'medical condition'
+    },
 }
 
 
@@ -73,11 +95,14 @@ class TestNtkHttpApi(unittest.TestCase):
 
 
     def test_B_table_create(self):
-        resp1 = self.ntkc.call(method='table_create',
-                               data={'definition': TABLES['t1'], 'type': 'mac'},
-                               user_type='admin')
-        print resp1.text
-        self.assertEqual(resp1.status_code, 200)
+        def create(table):
+            return self.ntkc.call(method='table_create',
+                                  data={'definition': table, 'type': 'mac'},
+                                  user_type='admin')
+        for k in TABLES.keys():
+            resp = create(TABLES[k])
+            self.assertEqual(resp.status_code, 200)
+
 
     def test_Z_user_delete(self):
         resp1 = self.ntkc.call(method='user_delete',
