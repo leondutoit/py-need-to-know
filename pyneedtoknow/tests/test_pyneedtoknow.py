@@ -5,7 +5,15 @@ import unittest
 from ..client import PgNeedToKnowClient
 
 TABLES = {
-    't1': {},
+    't1': {
+        'table_name': 't1',
+        'columns': [
+            {'name': 'name', 'type': 'text'},
+            {'name': 'age', 'type': 'int'},
+            {'name': 'email', 'type': 'text'},
+            {'name': 'country', 'type': 'text'}
+        ],
+        'description': 'personal and contact information'},
     't2': {},
     't3': {},
     't4': {},
@@ -64,6 +72,13 @@ class TestNtkHttpApi(unittest.TestCase):
         self.assertEqual(resp2.status_code, 200)
 
 
+    def test_B_table_create(self):
+        resp1 = self.ntkc.call(method='table_create',
+                               data={'definition': TABLES['t1'], 'type': 'mac'},
+                               user_type='admin')
+        print resp1.text
+        self.assertEqual(resp1.status_code, 200)
+
     def test_Z_user_delete(self):
         resp1 = self.ntkc.call(method='user_delete',
                                data={'user_id': '1', 'user_type': 'data_owner'},
@@ -90,8 +105,15 @@ def main():
         return
     runner = unittest.TextTestRunner()
     suite = []
-    correctness_tests = ['test_A_user_register', 'test_Z_user_delete']
-    scalability_tests = ['test_ZA_create_many', 'test_ZB_delete_many']
+    correctness_tests = [
+        'test_A_user_register',
+        'test_B_table_create',
+        'test_Z_user_delete'
+    ]
+    scalability_tests = [
+        'test_ZA_create_many',
+        'test_ZB_delete_many'
+    ]
     correctness_tests.sort()
     if argv[1] == '--correctness':
         suite.append(unittest.TestSuite(map(TestNtkHttpApi, correctness_tests)))

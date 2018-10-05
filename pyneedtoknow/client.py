@@ -16,14 +16,17 @@ class PgNeedToKnowClient(object):
             self.url = url
         if not api_endpoints:
             self.api_endpoints = {
+                'table_create': '/rpc/table_create',
                 'user_register': '/rpc/user_register',
-                'user_delete': '/rpc/user_delete'
+                'user_delete': '/rpc/user_delete',
             }
         else:
             self.api_endpoints = api_endpoints
         self.funcs = {
+            'table_create': self.table_create,
             'user_register': self.user_register,
-            'user_delete': self.user_delete
+            'user_delete': self.user_delete,
+
         }
 
     def call(self, method=None, data=None, identity=None, user_type=None):
@@ -92,7 +95,10 @@ class PgNeedToKnowClient(object):
     # table functions
 
     def table_create(self, data, token, endpoint=None):
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['table_create']
+        self._assert_keys_present(['definition', 'type'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def table_describe(self, data, token, endpoint=None):
@@ -117,6 +123,8 @@ class PgNeedToKnowClient(object):
     # user functions
 
     def user_register(self, data, token, endpoint=None):
+        if not endpoint:
+            endpoint = self.api_endpoints['user_register']
         self._assert_keys_present(['user_id', 'user_type', 'user_metadata'], data.keys())
         assert data['user_type'] in ['data_owner', 'data_user']
         return self._http_post_unauthenticated(endpoint, payload=data)
@@ -135,6 +143,8 @@ class PgNeedToKnowClient(object):
 
 
     def user_delete(self, data, token, endpoint=None):
+        if not endpoint:
+            endpoint = self.api_endpoints['user_delete']
         self._assert_keys_present(['user_id', 'user_type'], data.keys())
         return self._http_post_authenticated(endpoint, payload=data, token=token)
 
@@ -210,10 +220,10 @@ class PgNeedToKnowClient(object):
 
     # utility functions (not in the SQL API)
 
-    def post_data(self, data, token, endpoint=None):
+    def post_data(self, data, token, endpoint):
         pass
 
 
-    def get_data(self, endpoint, token):
+    def get_data(self, token, endpoint):
         pass
 
