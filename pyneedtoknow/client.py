@@ -95,6 +95,22 @@ class PgNeedToKnowClient(object):
     # table functions
 
     def table_create(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        E.g: {'definition': {
+                'table_name': 't1',
+                'columns': [
+                    {'name': 'c1', 'type': 'text', 'description': 'some column'},
+                    ...
+                ]
+            }
+        }, all postgres types are allowed.
+        token: JWT, role=admin
+        endpoint: API endpoint
+
+        """
         if not endpoint:
             endpoint = self.api_endpoints['table_create']
         self._assert_keys_present(['definition', 'type'], data.keys())
