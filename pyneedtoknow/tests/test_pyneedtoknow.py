@@ -2,6 +2,8 @@
 from sys import argv
 import unittest
 
+from ..client import PgNeedToKnowClient
+
 TABLES = {
     't1': {},
     't2': {},
@@ -39,36 +41,37 @@ class TestNtkHttpApi(unittest.TestCase):
 
     def delete_many(self, n, owner=False, user=False):
         for i in range(n):
+            user_id = str(i)
             if owner:
-                user_name = 'owner_' + str(i)
+                user_type = 'data_owner'
             elif user:
-                user_name = 'user_' + str(i)
+                user_type = 'data_user'
             self.ntkc.call(method='user_delete',
-                               data={'user_name': user_name},
+                               data={'user_id': user_id, 'user_type': user_type},
                                user_type='admin')
 
 
     def test_A_user_register(self):
         owner_data = {'user_id': '1', 'user_type': 'data_owner', 'user_metadata': {}}
         resp1 = self.ntkc.call(method='user_register',
-                                   data=owner_data,
-                                   user_type='anon')
+                               data=owner_data,
+                               user_type='anon')
         self.assertEqual(resp1.status_code, 200)
         user_data = {'user_id': '1', 'user_type': 'data_user', 'user_metadata': {}}
         resp2 = self.ntkc.call(method='user_register',
-                                   data=user_data,
-                                   user_type='anon')
+                               data=user_data,
+                               user_type='anon')
         self.assertEqual(resp2.status_code, 200)
 
 
     def test_Z_user_delete(self):
         resp1 = self.ntkc.call(method='user_delete',
-                                   data={'user_name': 'owner_1'},
-                                   user_type='admin')
+                               data={'user_id': '1', 'user_type': 'data_owner'},
+                               user_type='admin')
         self.assertEqual(resp1.status_code, 200)
         resp2 = self.ntkc.call(method='user_delete',
-                                   data={'user_name': 'user_1'},
-                                   user_type='admin')
+                               data={'user_id': '1', 'user_type': 'data_user'},
+                               user_type='admin')
         self.assertEqual(resp2.status_code, 200)
 
 

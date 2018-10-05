@@ -82,7 +82,7 @@ class PgNeedToKnowClient(object):
 
     def token(self, user_id=None, token_type=None):
         if user_id:
-            endpoint = '/rpc/token?id=' + user_id + '&token_type=' + token_type
+            endpoint = '/rpc/token?user_id=' + user_id + '&token_type=' + token_type
         else:
             endpoint = '/rpc/token?token_type=' + token_type
         resp = self._http_get(endpoint)
@@ -135,7 +135,7 @@ class PgNeedToKnowClient(object):
 
 
     def user_delete(self, endpoint, data, token):
-        self._assert_keys_present(['user_name'], data.keys())
+        self._assert_keys_present(['user_id', 'user_type'], data.keys())
         return self._http_post_authenticated(endpoint, payload=data, token=token)
 
     # group functions
