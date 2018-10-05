@@ -42,7 +42,7 @@ class PgNeedToKnowClient(object):
             endpoint = self.api_endpoints[method]
         except KeyError:
             raise Exception('Cannot look up client function based on provided method')
-        return func(endpoint, data, token)
+        return func(data, token, endpoint)
 
     # helper functions
 
@@ -91,126 +91,126 @@ class PgNeedToKnowClient(object):
 
     # table functions
 
-    def table_create(self, endpoint, data, token):
+    def table_create(self, data, token, endpoint=None):
         pass
 
 
-    def table_describe(self, endpoint, data, token):
+    def table_describe(self, data, token, endpoint=None):
         pass
 
 
-    def table_describe_columns(self, endpoint, data, token):
+    def table_describe_columns(self, data, token, endpoint=None):
         pass
 
 
-    def table_metadata(self, endpoint, data, token):
+    def table_metadata(self, data, token, endpoint=None):
         pass
 
 
-    def table_group_access_grant(self, endpoint, data, token):
+    def table_group_access_grant(self, data, token, endpoint=None):
         pass
 
 
-    def table_group_access_revoke(self, endpoint, data, token):
+    def table_group_access_revoke(self, data, token, endpoint=None):
         pass
 
     # user functions
 
-    def user_register(self, endpoint, data, token):
+    def user_register(self, data, token, endpoint=None):
         self._assert_keys_present(['user_id', 'user_type', 'user_metadata'], data.keys())
         assert data['user_type'] in ['data_owner', 'data_user']
         return self._http_post_unauthenticated(endpoint, payload=data)
 
 
-    def user_group_remove(self, endpoint, data, token):
+    def user_group_remove(self, data, token, endpoint=None):
         pass
 
 
-    def user_groups(self, endpoint, data, token):
+    def user_groups(self, data, token, endpoint=None):
         pass
 
 
-    def user_delete_data(self, endpoint, data, token):
+    def user_delete_data(self, data, token, endpoint=None):
         pass
 
 
-    def user_delete(self, endpoint, data, token):
+    def user_delete(self, data, token, endpoint=None):
         self._assert_keys_present(['user_id', 'user_type'], data.keys())
         return self._http_post_authenticated(endpoint, payload=data, token=token)
 
     # group functions
 
-    def group_create(self, endpoint, data, token):
+    def group_create(self, data, token, endpoint=None):
         pass
 
 
-    def group_add_members(self, endpoint, data, token):
+    def group_add_members(self, data, token, endpoint=None):
         pass
 
 
-    def _group_add_members_members(self, endpoint, data, token):
+    def _group_add_members_members(self, data, token, endpoint=None):
         pass
 
 
-    def _group_add_members_metadata(self, endpoint, data, token):
+    def _group_add_members_metadata(self, data, token, endpoint=None):
         pass
 
 
-    def _group_add_members_all_owners(self, endpoint, data, token):
+    def _group_add_members_all_owners(self, data, token, endpoint=None):
         pass
 
 
-    def _group_add_members_all_users(self, endpoint, data, token):
+    def _group_add_members_all_users(self, data, token, endpoint=None):
         pass
 
 
-    def _group_add_members_all(self, endpoint, data, token):
+    def _group_add_members_all(self, data, token, endpoint=None):
         pass
 
 
-    def group_list_members(self, endpoint, data, token):
+    def group_list_members(self, data, token, endpoint=None):
         pass
 
 
-    def group_remove_members(self, endpoint, data, token):
+    def group_remove_members(self, data, token, endpoint=None):
         pass
 
 
-    def group_delete(self, endpoint, data, token):
+    def group_delete(self, data, token, endpoint=None):
         pass
 
     # informational views, tables, and event logs
 
-    def get_table_overview(self, endpoint, data, token):
+    def get_table_overview(self, data, token, endpoint=None):
         pass
 
 
-    def get_user_registrations(self, endpoint, data, token):
+    def get_user_registrations(self, data, token, endpoint=None):
         pass
 
 
-    def get_groups(self, endpoint, data, token):
+    def get_groups(self, data, token, endpoint=None):
         pass
 
 
-    def get_event_log_user_group_removals(self, endpoint, data, token):
+    def get_event_log_user_group_removals(self, data, token, endpoint=None):
         pass
 
 
-    def get_event_log_user_data_deletions(self, endpoint, data, token):
+    def get_event_log_user_data_deletions(self, data, token, endpoint=None):
         pass
 
 
-    def get_event_log_data_access(self, endpoint, data, token):
+    def get_event_log_data_access(self, data, token, endpoint=None):
         pass
 
 
-    def get_event_log_access_control(self, endpoint, data, token):
+    def get_event_log_access_control(self, data, token, endpoint=None):
         pass
 
     # utility functions (not in the SQL API)
 
-    def post_data(self, endpoint, data, token):
+    def post_data(self, data, token, endpoint=None):
         pass
 
 
