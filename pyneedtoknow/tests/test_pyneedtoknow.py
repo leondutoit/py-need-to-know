@@ -58,27 +58,14 @@ class TestNtkHttpApi(unittest.TestCase):
     # Scalability scenario
     # eventually into own class
 
-    def register_many(self, n, owner=False, user=False):
+    def register_many(self, n, user_type):
         for i in range(n):
-            if owner:
-                user_type = 'data_owner'
-            elif user:
-                user_type = 'data_user'
-            self.ntkc.call(method='user_register',
-                           data={'user_id': str(i), 'user_type': user_type, 'user_metadata': {}},
-                           user_type='anon')
+            self.ntkc.user_register({'user_id': str(i), 'user_type': user_type, 'user_metadata': {}})
 
 
-    def delete_many(self, n, owner=False, user=False):
+    def delete_many(self, n, user_type, token):
         for i in range(n):
-            user_id = str(i)
-            if owner:
-                user_type = 'data_owner'
-            elif user:
-                user_type = 'data_user'
-            self.ntkc.call(method='user_delete',
-                           data={'user_id': user_id, 'user_type': user_type},
-                           user_type='admin')
+            self.ntkc.user_delete({'user_id': str(i), 'user_type': user_type}, token)
 
 
     def test_A_user_register(self):
@@ -112,11 +99,14 @@ class TestNtkHttpApi(unittest.TestCase):
 
 
     def test_ZA_create_many(self):
-        self.register_many(10000, owner=True)
+        self.register_many(10000, 'data_owner')
+        self.register_many(100, 'data_user')
 
 
     def test_ZB_delete_many(self):
-        self.delete_many(10000, owner=True)
+        token = self.ntkc.token(token_type='admin')
+        self.delete_many(10000, 'data_owner', token)
+        self.delete_many(100, 'data_user', token)
 
 
 def main():
