@@ -17,6 +17,7 @@ class PgNeedToKnowClient(object):
         if not api_endpoints:
             self.api_endpoints = {
                 'table_create': '/rpc/table_create',
+                'table_describe': '/rpc/table_describe',
                 'user_register': '/rpc/user_register',
                 'user_delete': '/rpc/user_delete',
             }
@@ -24,6 +25,7 @@ class PgNeedToKnowClient(object):
             self.api_endpoints = api_endpoints
         self.funcs = {
             'table_create': self.table_create,
+            'table_describe': self.table_describe,
             'user_register': self.user_register,
             'user_delete': self.user_delete,
 
@@ -54,7 +56,6 @@ class PgNeedToKnowClient(object):
             for rk in required_keys:
                 assert rk in existing_keys
         except AssertionError:
-            # make own exception
             raise Exception('Missing required key in data')
 
 
@@ -99,16 +100,16 @@ class PgNeedToKnowClient(object):
         Parameters
         ----------
         data: dict
-        E.g: {'definition': {
+            {'definition': {
                 'table_name': 't1',
                 'columns': [
-                    {'name': 'c1', 'type': 'text', 'description': 'some column'},
-                    ...
-                ]
+                    {'name': 'c1', 'type': 'text', 'description': 'some column'},]
+                }
             }
-        }, all postgres types are allowed.
-        token: JWT, role=admin
-        endpoint: API endpoint
+            Note: all PostgreSQL data types are allowed.
+        token: str
+            JWT, role=admin
+        endpoint: str
 
         """
         if not endpoint:
@@ -118,22 +119,68 @@ class PgNeedToKnowClient(object):
 
 
     def table_describe(self, data, token, endpoint=None):
-        pass
+        """
+        Parameters
+        ----------
+        data: dict
+            {'table_name': 't1',
+             'table_description': 'Personal and contact information'}
+        token: str
+            JWT, role=admin
+        endpoint: str
+
+        """
+        if not endpoint:
+            endpoint = self.api_endpoints['table_describe']
+        self._assert_keys_present(['table_name', 'table_description'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def table_describe_columns(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def table_metadata(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def table_group_access_grant(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def table_group_access_revoke(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
     # user functions
@@ -143,11 +190,12 @@ class PgNeedToKnowClient(object):
         Parameters
         ----------
         data: dict
-        E.g.: {'user_id': '12345',
-               'user_type': <data_owner, data_user>,
-               'user_metadata': {'institution': 'A'}}
-        token: JWT
-        endpoint: API endpoint
+            {'user_id': '12345',
+             'user_type': <data_owner, data_user>,
+             'user_metadata': {'institution': 'A'}}
+        token: str
+            JWT
+        endpoint: str
 
         """
         if not endpoint:
@@ -158,14 +206,38 @@ class PgNeedToKnowClient(object):
 
 
     def user_group_remove(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def user_groups(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def user_delete_data(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
@@ -174,10 +246,11 @@ class PgNeedToKnowClient(object):
         Parameters
         ----------
         data: dict
-        E.g.: {'user_id': '12345',
-               'user_type': <data_owner, data_user>}
-        token: JWT
-        endpoint: API endpoint
+            {'user_id': '12345',
+             'user_type': <data_owner, data_user>}
+        token: str
+            JWT
+        endpoint: str
 
         """
         if not endpoint:
@@ -188,71 +261,207 @@ class PgNeedToKnowClient(object):
     # group functions
 
     def group_create(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def group_add_members(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def _group_add_members_members(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def _group_add_members_metadata(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def _group_add_members_all_owners(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def _group_add_members_all_users(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def _group_add_members_all(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def group_list_members(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def group_remove_members(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def group_delete(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
     # informational views, tables, and event logs
 
     def get_table_overview(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def get_user_registrations(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def get_groups(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def get_event_log_user_group_removals(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def get_event_log_user_data_deletions(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def get_event_log_data_access(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
 
     def get_event_log_access_control(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+        """
         pass
 
     # utility functions (not in the SQL API)

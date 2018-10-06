@@ -41,7 +41,9 @@ Here is how to use `py-need-to-know` to accomplish this.
 ```python
 from pyneedtoknow import client
 
-c = client.PgNeedToKnowClient()
+# assuming the REST API is available at some URL
+# and that default endpoints have not been modified
+c = client.PgNeedToKnowClient(url='https://api.pgneedtoknow.com')
 
 TABLES = {
     't1' = {

@@ -104,6 +104,12 @@ class TestNtkHttpApi(unittest.TestCase):
             self.assertEqual(resp.status_code, 200)
 
 
+    def test_C_table_describe(self):
+        token = self.ntkc.token(token_type='admin')
+        resp = self.ntkc.table_describe({'table_name': 't1', 'table_description': 'my description'}, token)
+        self.assertEqual(resp.status_code, 200)
+
+
     def test_Z_user_delete(self):
         resp1 = self.ntkc.call(method='user_delete',
                                data={'user_id': '1', 'user_type': 'data_owner'},
@@ -133,11 +139,12 @@ def main():
     correctness_tests = [
         'test_A_user_register',
         'test_B_table_create',
-        'test_Z_user_delete'
+        'test_C_table_describe',
+        'test_Z_user_delete',
     ]
     scalability_tests = [
         'test_ZA_create_many',
-        'test_ZB_delete_many'
+        'test_ZB_delete_many',
     ]
     correctness_tests.sort()
     if argv[1] == '--correctness':
