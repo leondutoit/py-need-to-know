@@ -66,19 +66,59 @@ TABLES = {
 DATA_OWNERS = ['A', 'B', 'C', 'D', 'E', 'F']
 DATA_USERS = ['X', 'Y', 'Z']
 
-token = c.token(token_type='admin')
+# assuming the admin has authenticated themselves elsewhere
+admin_token = c.token(token_type='admin')
 
 # create basic DB objects
 for table in TABLES.keys()
-    c.table_create(TABLES[table], token)
+    c.table_create(TABLES[table], admin_token)
 for owner in DATA_OWNERS:
     owner_data = {'user_id': owner, 'user_type': 'data_owner',
                   'user_metadata': {}}
-    c.user_register(owner_data, token)
+    c.user_register(owner_data)
 for user in DATA_USERS:
     user_data = {'user_id': user, 'user_type': 'data_user',
                  'user_metadata': {}}
-    c.user_register(user_data, token)
+    c.user_register(user_data)
 
 # collect data
+for owner in DATA_OWNERS:
+    # assuming users have authenticated themselves elsewhere
+    owner_token = c.token(user_id=owner, token_type='owner')
+    # in reality the data would be different for each owner :)
+    c.post_data({'name': 'some name', 'age': 19,
+                 'email': 'my@email.com', 'country': 'Norway'},
+                token, '/t1')
+    c.post_data({'has_chronic_disease': 'yes', 'has_allergy': 'no'},
+                token, '/t2')
+
+# create groups
+c.group_create('group1', {'explanation': 'limited access'})
+c.group_create('group2', {'explanation': 'full access'})
+
+# add members
+# group1
+c.group_add_members({'group_name': 'group1',
+                     'memberships': {
+                        'data_users': ['X', 'Y'],
+                        'data_owners': ['A', 'B', 'C', 'D']}},
+                    admin_token)
+# group2
+c.group_add_members({'group_name': 'group2',
+                     'memberships': {
+                        'data_users': ['Z']
+                     }},
+                    admin_token)
+c.group_add_members({'group_name': 'group2',
+                     'all_owners': True
+                     },
+                    admin_token)
+
+# add table grants
+c.table_group_access_grant({'table_name': 't1', 'group_name': 'group1',
+                            'grant_type': 'select'}, admin_token)
+c.table_group_access_grant({'table_name': 't1', 'group_name': 'group2',
+                            'grant_type': 'select'}, admin_token)
+c.table_group_access_grant({'table_name': 't2', 'group_name': 'group2',
+                            'grant_type': 'select'}, admin_token)
 ```

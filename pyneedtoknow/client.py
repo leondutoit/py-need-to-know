@@ -138,7 +138,7 @@ class PgNeedToKnowClient(object):
 
     # user functions
 
-    def user_register(self, data, token, endpoint=None):
+    def user_register(self, data, token=None, endpoint=None):
         """
         Parameters
         ----------
@@ -261,6 +261,9 @@ class PgNeedToKnowClient(object):
         pass
 
 
-    def get_data(self, token, endpoint):
+    def patch_data(self, data, token , endpoint):
         pass
 
+
+    def get_data(self, token, endpoint):
+        pass
