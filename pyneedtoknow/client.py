@@ -139,6 +139,17 @@ class PgNeedToKnowClient(object):
     # user functions
 
     def user_register(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        E.g.: {'user_id': '12345',
+               'user_type': <data_owner, data_user>,
+               'user_metadata': {'institution': 'A'}}
+        token: JWT
+        endpoint: API endpoint
+
+        """
         if not endpoint:
             endpoint = self.api_endpoints['user_register']
         self._assert_keys_present(['user_id', 'user_type', 'user_metadata'], data.keys())
@@ -159,6 +170,16 @@ class PgNeedToKnowClient(object):
 
 
     def user_delete(self, data, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        E.g.: {'user_id': '12345',
+               'user_type': <data_owner, data_user>}
+        token: JWT
+        endpoint: API endpoint
+
+        """
         if not endpoint:
             endpoint = self.api_endpoints['user_delete']
         self._assert_keys_present(['user_id', 'user_type'], data.keys())

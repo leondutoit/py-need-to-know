@@ -21,7 +21,7 @@ data users: X, Y, Z
 Now suppose we need to set up the following access control rules in our DB:
 
 ```txt
-data users X, and Y should only have access to data contained in tables t1
+data users X, and Y should only have access to data in tables t1 and only data from owners A, B, C, D
 data user Z should have access to all data - i.e. tables t1, t2
 ```
 
