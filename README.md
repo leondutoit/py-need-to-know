@@ -43,21 +43,42 @@ from pyneedtoknow import client
 
 c = client.PgNeedToKnowClient()
 
-table_definition = {
-    'table_name': 't1',
-    'columns': [
-        {'name': 'name', 'type': 'text'},
-        {'name': 'age', 'type': 'int'},
-        {'name': 'email', 'type': 'text'},
-        {'name': 'country', 'type': 'text'}
-    ],
-    'description': 'personal and contact information'
+TABLES = {
+    't1' = {
+        'table_name': 't1',
+        'columns': [
+            {'name': 'name', 'type': 'text'},
+            {'name': 'age', 'type': 'int'},
+            {'name': 'email', 'type': 'text'},
+            {'name': 'country', 'type': 'text'}
+        ],
+        'description': 'personal and contact information'
+    }
+    't2': {
+        'table_name': 't2',
+        'columns': [
+            {'name': 'has_chronic_disease', 'type': 'text'},
+            {'name': 'has_allergy', 'type': 'text'},
+        ],
+        'description': 'medical condition'
+    },
 }
+DATA_OWNERS = ['A', 'B', 'C', 'D', 'E', 'F']
+DATA_USERS = ['X', 'Y', 'Z']
 
-# get an admin token
-# from the API, or some other issuer
 token = c.token(token_type='admin')
-c.table_create(table_definition, token)
 
-# and so on...
+# create basic DB objects
+for table in TABLES.keys()
+    c.table_create(TABLES[table], token)
+for owner in DATA_OWNERS:
+    owner_data = {'user_id': owner, 'user_type': 'data_owner',
+                  'user_metadata': {}}
+    c.user_register(owner_data, token)
+for user in DATA_USERS:
+    user_data = {'user_id': user, 'user_type': 'data_user',
+                 'user_metadata': {}}
+    c.user_register(user_data, token)
+
+# collect data
 ```
