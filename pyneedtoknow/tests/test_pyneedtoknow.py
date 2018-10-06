@@ -83,24 +83,17 @@ class TestNtkHttpApi(unittest.TestCase):
 
     def test_A_user_register(self):
         owner_data = {'user_id': '1', 'user_type': 'data_owner', 'user_metadata': {}}
-        resp1 = self.ntkc.call(method='user_register',
-                               data=owner_data,
-                               user_type='anon')
+        resp1 = self.ntkc.user_register(owner_data)
         self.assertEqual(resp1.status_code, 200)
         user_data = {'user_id': '1', 'user_type': 'data_user', 'user_metadata': {}}
-        resp2 = self.ntkc.call(method='user_register',
-                               data=user_data,
-                               user_type='anon')
+        resp2 = self.ntkc.user_register(user_data)
         self.assertEqual(resp2.status_code, 200)
 
 
     def test_B_table_create(self):
-        def create(table):
-            return self.ntkc.call(method='table_create',
-                                  data={'definition': table, 'type': 'mac'},
-                                  user_type='admin')
+        token = self.ntkc.token(token_type='admin')
         for k in TABLES.keys():
-            resp = create(TABLES[k])
+            resp = self.ntkc.table_create({'definition': TABLES[k], 'type': 'mac'}, token)
             self.assertEqual(resp.status_code, 200)
 
 
@@ -111,13 +104,10 @@ class TestNtkHttpApi(unittest.TestCase):
 
 
     def test_Z_user_delete(self):
-        resp1 = self.ntkc.call(method='user_delete',
-                               data={'user_id': '1', 'user_type': 'data_owner'},
-                               user_type='admin')
+        token = self.ntkc.token(token_type='admin')
+        resp1 = self.ntkc.user_delete({'user_id': '1', 'user_type': 'data_owner'}, token)
         self.assertEqual(resp1.status_code, 200)
-        resp2 = self.ntkc.call(method='user_delete',
-                               data={'user_id': '1', 'user_type': 'data_user'},
-                               user_type='admin')
+        resp2 = self.ntkc.user_delete({'user_id': '1', 'user_type': 'data_user'}, token)
         self.assertEqual(resp2.status_code, 200)
 
 
