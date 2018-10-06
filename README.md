@@ -93,8 +93,12 @@ for owner in DATA_OWNERS:
                 token, '/t2')
 
 # create groups
-c.group_create('group1', {'explanation': 'limited access'})
-c.group_create('group2', {'explanation': 'full access'})
+c.group_create({'group_name': 'group1',
+                'group_metadata': {'explanation': 'limited access'}},
+                admin_token)
+c.group_create({'group_name': 'group2',
+                'group_metadata': {'explanation': 'full access'}},
+                admin_token)
 
 # add members
 # group1
@@ -106,13 +110,11 @@ c.group_add_members({'group_name': 'group1',
 # group2
 c.group_add_members({'group_name': 'group2',
                      'memberships': {
-                        'data_users': ['Z']
-                     }},
+                        'data_users': ['Z']}},
                     admin_token)
 c.group_add_members({'group_name': 'group2',
-                     'all_owners': True
-                     },
-                    admin_token)
+                     'all_owners': True},
+                     admin_token)
 
 # add table grants
 c.table_group_access_grant({'table_name': 't1', 'group_name': 'group1',
