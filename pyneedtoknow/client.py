@@ -20,6 +20,8 @@ class PgNeedToKnowClient(object):
                 'table_describe': '/rpc/table_describe',
                 'table_describe_columns': '/rpc/table_describe_columns',
                 'table_metadata': '/rpc/table_metadata',
+                'group_create': '/rpc/group_create',
+                'group_delete': '/rpc/group_delete',
                 'user_register': '/rpc/user_register',
                 'user_delete': '/rpc/user_delete',
             }
@@ -30,6 +32,8 @@ class PgNeedToKnowClient(object):
             'table_describe': self.table_describe,
             'table_describe_columns': self.table_describe_columns,
             'table_metadata': self.table_metadata,
+            'group_create': self.group_create,
+            'group_delete': self.group_delete,
             'user_register': self.user_register,
             'user_delete': self.user_delete,
 
@@ -96,8 +100,6 @@ class PgNeedToKnowClient(object):
         resp = self._http_get(endpoint)
         return json.loads(resp.text)['token']
 
-
-    # table functions
 
     def table_create(self, data, token, endpoint=None):
         """
@@ -200,7 +202,6 @@ class PgNeedToKnowClient(object):
         """
         pass
 
-    # user functions
 
     def user_register(self, data, token=None, endpoint=None):
         """
@@ -275,18 +276,21 @@ class PgNeedToKnowClient(object):
         self._assert_keys_present(['user_id', 'user_type'], data.keys())
         return self._http_post_authenticated(endpoint, payload=data, token=token)
 
-    # group functions
 
     def group_create(self, data, token, endpoint=None):
         """
         Parameters
         ----------
         data: dict
+            {'group_name': 'group1', 'group_metadata': {'key': 'val'}}
         token: str
             JWT
         endpoint: str
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['group_create']
+        self._assert_keys_present(['group_name', 'group_metadata'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def group_add_members(self, data, token, endpoint=None):
@@ -394,7 +398,10 @@ class PgNeedToKnowClient(object):
             JWT
         endpoint: str
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['group_delete']
+        self._assert_keys_present(['group_name'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
     # informational views, tables, and event logs
 

@@ -109,6 +109,33 @@ class TestNtkHttpApi(unittest.TestCase):
                 self.assertEqual(coldata['column_description'], 'Age in years')
 
 
+    def test_E_default_data_access_policies(self):
+        pass
+
+
+    def test_G_group_create(self):
+        token = self.ntkc.token(token_type='admin')
+        resp1 = self.ntkc.group_create({'group_name': 'group1', 'group_metadata': {}}, token)
+        self.assertEqual(resp1.status_code, 200)
+        resp2 = self.ntkc.group_create({'group_name': 'group2', 'group_metadata': {}}, token)
+        self.assertEqual(resp2.status_code, 200)
+
+    # add members
+    # test access again
+    # add table grants
+    # test access again
+    # get group overview
+    # user remove themselves
+    # admin removes users
+
+    def test_Y_group_delete(self):
+        token = self.ntkc.token(token_type='admin')
+        resp1 = self.ntkc.group_delete({'group_name': 'group1'}, token)
+        self.assertEqual(resp1.status_code, 200)
+        resp2 = self.ntkc.group_delete({'group_name': 'group2'}, token)
+        self.assertEqual(resp2.status_code, 200)
+
+
     def test_Z_user_delete(self):
         token = self.ntkc.token(token_type='admin')
         resp1 = self.ntkc.user_delete({'user_id': '1', 'user_type': 'data_owner'}, token)
@@ -141,6 +168,8 @@ def main():
         'test_C_table_describe',
         'test_D_table_describe_columns',
         'test_E_table_metadata',
+        'test_G_group_create',
+        'test_Y_group_delete',
         'test_Z_user_delete',
     ]
     scalability_tests = [
