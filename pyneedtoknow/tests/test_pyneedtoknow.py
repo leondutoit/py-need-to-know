@@ -1,4 +1,5 @@
 
+import json
 from sys import argv
 import unittest
 
@@ -99,6 +100,15 @@ class TestNtkHttpApi(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
 
 
+    def test_E_table_metadata(self):
+        token = self.ntkc.token(token_type='admin')
+        resp = self.ntkc.table_metadata({'table_name': 't1'}, token)
+        data = json.loads(resp.text)
+        for coldata in data:
+            if coldata['column_name'] == 'age':
+                self.assertEqual(coldata['column_description'], 'Age in years')
+
+
     def test_Z_user_delete(self):
         token = self.ntkc.token(token_type='admin')
         resp1 = self.ntkc.user_delete({'user_id': '1', 'user_type': 'data_owner'}, token)
@@ -130,6 +140,7 @@ def main():
         'test_B_table_create',
         'test_C_table_describe',
         'test_D_table_describe_columns',
+        'test_E_table_metadata',
         'test_Z_user_delete',
     ]
     scalability_tests = [

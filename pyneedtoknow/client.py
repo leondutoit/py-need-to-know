@@ -19,6 +19,7 @@ class PgNeedToKnowClient(object):
                 'table_create': '/rpc/table_create',
                 'table_describe': '/rpc/table_describe',
                 'table_describe_columns': '/rpc/table_describe_columns',
+                'table_metadata': '/rpc/table_metadata',
                 'user_register': '/rpc/user_register',
                 'user_delete': '/rpc/user_delete',
             }
@@ -28,6 +29,7 @@ class PgNeedToKnowClient(object):
             'table_create': self.table_create,
             'table_describe': self.table_describe,
             'table_describe_columns': self.table_describe_columns,
+            'table_metadata': self.table_metadata,
             'user_register': self.user_register,
             'user_delete': self.user_delete,
 
@@ -163,11 +165,16 @@ class PgNeedToKnowClient(object):
         Parameters
         ----------
         data: dict
+            {'table_name': 't1'}
         token: str
             JWT
         endpoint: str
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['table_metadata']
+        endpoint += '?table_name=%s' % data['table_name']
+        headers = {'Authorization': 'Bearer ' + token}
+        return self._http_get(endpoint, headers)
 
 
     def table_group_access_grant(self, data, token, endpoint=None):
