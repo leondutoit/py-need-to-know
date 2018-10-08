@@ -90,6 +90,15 @@ class TestNtkHttpApi(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
 
 
+    def test_D_table_describe_columns(self):
+        token = self.ntkc.token(token_type='admin')
+        descriptions = {'table_name': 't1', 'column_descriptions': [
+                       {'name': 'name', 'description': 'First and last name'},
+                       {'name': 'age', 'description': 'Age in years'}]}
+        resp = self.ntkc.table_describe_columns(descriptions, token)
+        self.assertEqual(resp.status_code, 200)
+
+
     def test_Z_user_delete(self):
         token = self.ntkc.token(token_type='admin')
         resp1 = self.ntkc.user_delete({'user_id': '1', 'user_type': 'data_owner'}, token)
@@ -120,6 +129,7 @@ def main():
         'test_A_user_register',
         'test_B_table_create',
         'test_C_table_describe',
+        'test_D_table_describe_columns',
         'test_Z_user_delete',
     ]
     scalability_tests = [

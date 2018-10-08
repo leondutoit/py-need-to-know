@@ -18,6 +18,7 @@ class PgNeedToKnowClient(object):
             self.api_endpoints = {
                 'table_create': '/rpc/table_create',
                 'table_describe': '/rpc/table_describe',
+                'table_describe_columns': '/rpc/table_describe_columns',
                 'user_register': '/rpc/user_register',
                 'user_delete': '/rpc/user_delete',
             }
@@ -26,6 +27,7 @@ class PgNeedToKnowClient(object):
         self.funcs = {
             'table_create': self.table_create,
             'table_describe': self.table_describe,
+            'table_describe_columns': self.table_describe_columns,
             'user_register': self.user_register,
             'user_delete': self.user_delete,
 
@@ -141,11 +143,19 @@ class PgNeedToKnowClient(object):
         Parameters
         ----------
         data: dict
+            {'table_name': 't1',
+             'column_descriptions': [
+                    {'name': 'c1', 'description': 'my column'}
+                ]
+            }
         token: str
             JWT
         endpoint: str
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['table_describe_columns']
+        self._assert_keys_present(['table_name', 'column_descriptions'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def table_metadata(self, data, token, endpoint=None):
