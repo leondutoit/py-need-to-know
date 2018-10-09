@@ -22,6 +22,7 @@ class PgNeedToKnowClient(object):
                 'table_metadata': '/rpc/table_metadata',
                 'group_create': '/rpc/group_create',
                 'group_add_members': '/rpc/group_add_members',
+                'group_list_members': '/rpc/group_list_members',
                 'group_remove_members': '/rpc/group_remove_members',
                 'group_delete': '/rpc/group_delete',
                 'user_register': '/rpc/user_register',
@@ -37,6 +38,7 @@ class PgNeedToKnowClient(object):
             'table_metadata': self.table_metadata,
             'group_create': self.group_create,
             'group_add_members': self.group_add_members,
+            'group_list_members': self.group_list_members,
             'group_remove_members': self.group_remove_members,
             'group_delete': self.group_delete,
             'user_register': self.user_register,
@@ -387,12 +389,16 @@ class PgNeedToKnowClient(object):
         Parameters
         ----------
         data: dict
+            {'group_name': 'group1'}
         token: str
             JWT
         endpoint: str
 
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['group_list_members']
+        self._assert_keys_present(['group_name'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def group_remove_members(self, data, token, endpoint=None):

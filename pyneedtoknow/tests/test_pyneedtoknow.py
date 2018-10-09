@@ -50,7 +50,9 @@ class TestNtkHttpApi(unittest.TestCase):
     def setUpClass(cls):
         cls.ntkc = PgNeedToKnowClient()
         cls.OWNERS = ['A', 'B', 'E', 'F']
+        cls.OWNERS_METADATA = {'A': {'country': 'SE'}, 'B': {'country': 'SE'}, 'E': {'country': 'NO'}, 'F': {'country': 'NO'}}
         cls.USERS = ['X', 'Y', 'Z']
+        cls.USERS_METADATA = {'X': {'country': 'SE'}, 'Y': {'country': 'SE'}, 'Z': {'country': 'NO'}}
 
 
     @classmethod
@@ -73,11 +75,11 @@ class TestNtkHttpApi(unittest.TestCase):
 
     def test_A_user_register(self):
         for owner in self.OWNERS:
-            owner_data = {'user_id': owner, 'user_type': 'data_owner', 'user_metadata': {}}
+            owner_data = {'user_id': owner, 'user_type': 'data_owner', 'user_metadata': self.OWNERS_METADATA[owner] }
             resp = self.ntkc.user_register(owner_data)
             self.assertEqual(resp.status_code, 200)
         for user in self.USERS:
-            user_data = {'user_id': user, 'user_type': 'data_user', 'user_metadata': {}}
+            user_data = {'user_id': user, 'user_type': 'data_user', 'user_metadata': self.USERS_METADATA[user] }
             resp = self.ntkc.user_register(user_data)
             self.assertEqual(resp.status_code, 200)
 
@@ -118,22 +120,14 @@ class TestNtkHttpApi(unittest.TestCase):
         owner_token_B = self.ntkc.token(user_id='B', token_type='owner')
         owner_token_E = self.ntkc.token(user_id='E', token_type='owner')
         owner_token_F = self.ntkc.token(user_id='F', token_type='owner')
-        self.ntkc.post_data({'name': 'A', 'age': 75, 'email': 'a@b.se', 'country': 'Sweden'},
-                            owner_token_A, '/t1')
-        self.ntkc.post_data({'name': 'B', 'age': 35, 'email': 'b@b.se', 'country': 'Sweden'},
-                            owner_token_B, '/t1')
-        self.ntkc.post_data({'name': 'E', 'age': 10, 'email': 'e@b.no', 'country': 'Norway'},
-                            owner_token_E, '/t1')
-        self.ntkc.post_data({'name': 'F', 'age': 18, 'email': 'f@b.no', 'country': 'Norway'},
-                            owner_token_F, '/t1')
-        self.ntkc.post_data({'has_chronic_disease': 'yes', 'has_allergy': 'yes'},
-                            owner_token_A, '/t4')
-        self.ntkc.post_data({'has_chronic_disease': 'no', 'has_allergy': 'yes'},
-                            owner_token_B, '/t4')
-        self.ntkc.post_data({'has_chronic_disease': 'yes', 'has_allergy': 'no'},
-                            owner_token_E, '/t4')
-        self.ntkc.post_data({'has_chronic_disease': 'yes', 'has_allergy': 'no'},
-                            owner_token_F, '/t4')
+        self.ntkc.post_data({'name': 'A', 'age': 75, 'email': 'a@b.se', 'country': 'Sweden'}, owner_token_A, '/t1')
+        self.ntkc.post_data({'name': 'B', 'age': 35, 'email': 'b@b.se', 'country': 'Sweden'}, owner_token_B, '/t1')
+        self.ntkc.post_data({'name': 'E', 'age': 10, 'email': 'e@b.no', 'country': 'Norway'}, owner_token_E, '/t1')
+        self.ntkc.post_data({'name': 'F', 'age': 18, 'email': 'f@b.no', 'country': 'Norway'}, owner_token_F, '/t1')
+        self.ntkc.post_data({'has_chronic_disease': 'yes', 'has_allergy': 'yes'}, owner_token_A, '/t4')
+        self.ntkc.post_data({'has_chronic_disease': 'no', 'has_allergy': 'yes'}, owner_token_B, '/t4')
+        self.ntkc.post_data({'has_chronic_disease': 'yes', 'has_allergy': 'no'}, owner_token_E, '/t4')
+        self.ntkc.post_data({'has_chronic_disease': 'yes', 'has_allergy': 'no'}, owner_token_F, '/t4')
 
 
     def _delete_test_data(self):
@@ -172,9 +166,13 @@ class TestNtkHttpApi(unittest.TestCase):
         self.assertEqual(resp2.status_code, 200)
 
 
-    def test_H_group_add_members(self):
+    def test_H_group_add_and_remove_members(self):
+        token = self.ntkc.token(token_type='admin')
+        resp1 = self.ntkc.group_list_members({'group_name': 'group1'}, token)
+        self.assertEqual(len(json.loads(resp1.text)), 0)
+        #resp1 = self.ntkc.group_add_members({}, token)
         # test access again
-        pass
+        #resp1 = self.ntkc.group_remove_members({}, token)
 
 
     def test_I_table_group_access_grant(self):
@@ -229,6 +227,7 @@ def main():
         'test_E_table_metadata',
         'test_F_default_data_access_policies',
         'test_G_group_create',
+        'test_H_group_add_and_remove_members',
         'test_Y_group_delete',
         'test_Z_user_delete',
     ]
