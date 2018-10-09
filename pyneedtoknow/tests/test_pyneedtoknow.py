@@ -49,6 +49,8 @@ class TestNtkHttpApi(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.ntkc = PgNeedToKnowClient()
+        cls.OWNERS = ['A', 'B', 'E', 'F']
+        cls.USERS = ['X', 'Y', 'Z']
 
 
     @classmethod
@@ -70,12 +72,14 @@ class TestNtkHttpApi(unittest.TestCase):
 
 
     def test_A_user_register(self):
-        owner_data = {'user_id': '1', 'user_type': 'data_owner', 'user_metadata': {}}
-        resp1 = self.ntkc.user_register(owner_data)
-        self.assertEqual(resp1.status_code, 200)
-        user_data = {'user_id': '1', 'user_type': 'data_user', 'user_metadata': {}}
-        resp2 = self.ntkc.user_register(user_data)
-        self.assertEqual(resp2.status_code, 200)
+        for owner in self.OWNERS:
+            owner_data = {'user_id': owner, 'user_type': 'data_owner', 'user_metadata': {}}
+            resp = self.ntkc.user_register(owner_data)
+            self.assertEqual(resp.status_code, 200)
+        for user in self.USERS:
+            user_data = {'user_id': user, 'user_type': 'data_user', 'user_metadata': {}}
+            resp = self.ntkc.user_register(user_data)
+            self.assertEqual(resp.status_code, 200)
 
 
     def test_B_table_create(self):
@@ -109,8 +113,55 @@ class TestNtkHttpApi(unittest.TestCase):
                 self.assertEqual(coldata['column_description'], 'Age in years')
 
 
-    def test_E_default_data_access_policies(self):
-        pass
+    def _insert_test_data(self):
+        owner_token_A = self.ntkc.token(user_id='A', token_type='owner')
+        owner_token_B = self.ntkc.token(user_id='B', token_type='owner')
+        owner_token_E = self.ntkc.token(user_id='E', token_type='owner')
+        owner_token_F = self.ntkc.token(user_id='F', token_type='owner')
+        self.ntkc.post_data({'name': 'A', 'age': 75, 'email': 'a@b.se', 'country': 'Sweden'},
+                            owner_token_A, '/t1')
+        self.ntkc.post_data({'name': 'B', 'age': 35, 'email': 'b@b.se', 'country': 'Sweden'},
+                            owner_token_B, '/t1')
+        self.ntkc.post_data({'name': 'E', 'age': 10, 'email': 'e@b.no', 'country': 'Norway'},
+                            owner_token_E, '/t1')
+        self.ntkc.post_data({'name': 'F', 'age': 18, 'email': 'f@b.no', 'country': 'Norway'},
+                            owner_token_F, '/t1')
+        self.ntkc.post_data({'has_chronic_disease': 'yes', 'has_allergy': 'yes'},
+                            owner_token_A, '/t4')
+        self.ntkc.post_data({'has_chronic_disease': 'no', 'has_allergy': 'yes'},
+                            owner_token_B, '/t4')
+        self.ntkc.post_data({'has_chronic_disease': 'yes', 'has_allergy': 'no'},
+                            owner_token_E, '/t4')
+        self.ntkc.post_data({'has_chronic_disease': 'yes', 'has_allergy': 'no'},
+                            owner_token_F, '/t4')
+
+
+    def _delete_test_data(self):
+        owner_token_A = self.ntkc.token(user_id='A', token_type='owner')
+        owner_token_B = self.ntkc.token(user_id='B', token_type='owner')
+        owner_token_E = self.ntkc.token(user_id='E', token_type='owner')
+        owner_token_F = self.ntkc.token(user_id='F', token_type='owner')
+        for token in [owner_token_A, owner_token_B, owner_token_E, owner_token_F]:
+            self.ntkc.user_delete_data({}, token)
+
+
+    def test_F_default_data_access_policies(self):
+        # 1. that data owners can only see their own data
+        # 2. that data users do not have access by default
+        # 3. that admins cannot access data
+        self._insert_test_data()
+        owner_token_A = self.ntkc.token(user_id='A', token_type='owner')
+        resp1 = self.ntkc.get_data(owner_token_A, '/t1')
+        data = json.loads(resp1.text)
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]['row_owner'], 'owner_A')
+        user_token_X = self.ntkc.token(user_id='X', token_type='user')
+        resp2 = self.ntkc.get_data(user_token_X, '/t1')
+        self.assertEqual(resp2.status_code, 403)
+        admin_token = self.ntkc.token(token_type='admin')
+        resp3 = self.ntkc.get_data(admin_token, '/t1')
+        self.assertEqual(len(json.loads(resp3.text)), 0)
+        self._delete_test_data()
 
 
     def test_G_group_create(self):
@@ -138,10 +189,12 @@ class TestNtkHttpApi(unittest.TestCase):
 
     def test_Z_user_delete(self):
         token = self.ntkc.token(token_type='admin')
-        resp1 = self.ntkc.user_delete({'user_id': '1', 'user_type': 'data_owner'}, token)
-        self.assertEqual(resp1.status_code, 200)
-        resp2 = self.ntkc.user_delete({'user_id': '1', 'user_type': 'data_user'}, token)
-        self.assertEqual(resp2.status_code, 200)
+        for owner in self.OWNERS:
+            resp = self.ntkc.user_delete({'user_id': owner, 'user_type': 'data_owner'}, token)
+            self.assertEqual(resp.status_code, 200)
+        for user in self.USERS:
+            resp = self.ntkc.user_delete({'user_id': user, 'user_type': 'data_user'}, token)
+            self.assertEqual(resp.status_code, 200)
 
 
     def test_ZA_create_many(self):
@@ -168,6 +221,7 @@ def main():
         'test_C_table_describe',
         'test_D_table_describe_columns',
         'test_E_table_metadata',
+        'test_F_default_data_access_policies',
         'test_G_group_create',
         'test_Y_group_delete',
         'test_Z_user_delete',

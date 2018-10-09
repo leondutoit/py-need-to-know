@@ -23,6 +23,7 @@ class PgNeedToKnowClient(object):
                 'group_create': '/rpc/group_create',
                 'group_delete': '/rpc/group_delete',
                 'user_register': '/rpc/user_register',
+                'user_delete_data': '/rpc/user_delete_data',
                 'user_delete': '/rpc/user_delete',
             }
         else:
@@ -35,6 +36,7 @@ class PgNeedToKnowClient(object):
             'group_create': self.group_create,
             'group_delete': self.group_delete,
             'user_register': self.user_register,
+            'user_delete_data': self.user_delete_data,
             'user_delete': self.user_delete,
 
         }
@@ -90,6 +92,12 @@ class PgNeedToKnowClient(object):
             return requests.post(url, headers=headers, data=json.dumps(payload))
         else:
             return requests.post(url, headers=headers)
+
+
+    def _http_patch_authenticated(self, endpoint, payload=None, token=None):
+        headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}
+        url = self.url + endpoint
+        return requests.patch(url, headers=headers, data=json.dumps(payload))
 
 
     def token(self, user_id=None, token_type=None):
@@ -251,12 +259,14 @@ class PgNeedToKnowClient(object):
         """
         Parameters
         ----------
-        data: dict
+        data: None
         token: str
             JWT
         endpoint: str
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['user_delete_data']
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def user_delete(self, data, token, endpoint=None):
@@ -403,7 +413,6 @@ class PgNeedToKnowClient(object):
         self._assert_keys_present(['group_name'], data.keys())
         return self._http_post_authenticated(endpoint, payload=data, token=token)
 
-    # informational views, tables, and event logs
 
     def get_table_overview(self, data, token, endpoint=None):
         """
@@ -491,12 +500,13 @@ class PgNeedToKnowClient(object):
     # utility functions (not in the SQL API)
 
     def post_data(self, data, token, endpoint):
-        pass
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def patch_data(self, data, token , endpoint):
-        pass
+        return self._http_patch_authenticated(endpoint, payload=data, token=token)
 
 
     def get_data(self, token, endpoint):
-        pass
+        headers = {'Authorization': 'Bearer ' + token}
+        return self._http_get(endpoint, headers)
