@@ -332,7 +332,7 @@ class PgNeedToKnowClient(object):
         Parameters
         ----------
         data: dict
-            1. {'group_name': 'group1', 'memberships': {'data_owners': ['1', '2'], 'data_users': ['3', '4']}}, or
+            1. {'group_name': 'group1', 'members': {'memberships': {'data_owners': ['1', '2'], 'data_users': ['3', '4']}}}, or
             2. {'group_name': 'group1', 'metadata': {'key': 'country', 'value': 'NO'}}, or
             3. {'group_name': 'group1', 'add_all': true}, or
             4. {'group_name': 'group1', 'add_all_owners': true}, or
@@ -345,7 +345,7 @@ class PgNeedToKnowClient(object):
         if not endpoint:
             endpoint = self.api_endpoints['group_add_members']
         keys = data.keys()
-        if 'memberships' in keys:
+        if 'members' in keys:
             return self._group_add_members_members(data, token, endpoint)
         elif 'metadata' in keys:
             return self._group_add_members_metadata(data, token, endpoint)
@@ -360,7 +360,7 @@ class PgNeedToKnowClient(object):
 
 
     def _group_add_members_members(self, data, token, endpoint):
-        self._assert_keys_present(['group_name', 'memberships'], data.keys())
+        self._assert_keys_present(['group_name', 'members'], data.keys())
         return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
@@ -415,7 +415,7 @@ class PgNeedToKnowClient(object):
         Parameters
         ----------
         data: dict
-            1. {'group_name': 'group1', 'memberships': {'data_owners': ['1', '2'], 'data_users': ['3', '4']}}, or
+            1. {'group_name': 'group1', 'members': {'memberships': {'data_owners': ['1', '2'], 'data_users': ['3', '4']}}}, or
             2. {'group_name': 'group1', 'metadata': {'key': 'country', 'value': 'NO'}}, or
             3. {'group_name': 'group1', 'remove_all': true}
         token: str
@@ -426,7 +426,7 @@ class PgNeedToKnowClient(object):
         if not endpoint:
             endpoint = self.api_endpoints['group_remove_members']
         keys = data.keys()
-        if 'memberships' in keys:
+        if 'members' in keys:
             return self._group_remove_members_members(data, token, endpoint)
         elif 'metadata' in keys:
             return self._group_remove_members_metadata(data, token, endpoint)
@@ -438,7 +438,7 @@ class PgNeedToKnowClient(object):
 
 
     def _group_remove_members_members(self, data, token, endpoint):
-        self._assert_keys_present(['group_name', 'memberships'], data.keys())
+        self._assert_keys_present(['group_name', 'members'], data.keys())
         return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 

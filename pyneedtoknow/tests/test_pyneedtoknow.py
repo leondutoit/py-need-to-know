@@ -170,9 +170,13 @@ class TestNtkHttpApi(unittest.TestCase):
         token = self.ntkc.token(token_type='admin')
         resp1 = self.ntkc.group_list_members({'group_name': 'group1'}, token)
         self.assertEqual(len(json.loads(resp1.text)), 0)
-        #resp1 = self.ntkc.group_add_members({}, token)
-        # test access again
-        #resp1 = self.ntkc.group_remove_members({}, token)
+        named_members = {'group_name': 'group1', 'members': {'memberships': {'data_owners': ['A'], 'data_users': ['X']}}}
+        resp2 = self.ntkc.group_add_members(named_members, token)
+        resp1 = self.ntkc.group_list_members({'group_name': 'group1'}, token)
+        self.assertEqual(len(json.loads(resp1.text)), 2)
+        resp3 = self.ntkc.group_remove_members(named_members, token)
+        resp1 = self.ntkc.group_list_members({'group_name': 'group1'}, token)
+        self.assertEqual(len(json.loads(resp1.text)), 0)
 
 
     def test_I_table_group_access_grant(self):
