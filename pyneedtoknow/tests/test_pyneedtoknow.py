@@ -187,6 +187,12 @@ class TestNtkHttpApi(unittest.TestCase):
         resp1 = self.ntkc.group_list_members({'group_name': 'group1'}, token)
         self.assertEqual(len(json.loads(resp1.text)), 0)
         # 3. add and removing all
+        resp4 = self.ntkc.group_add_members({'group_name': 'group1', 'add_all': True}, token)
+        resp1 = self.ntkc.group_list_members({'group_name': 'group1'}, token)
+        self.assertEqual(len(json.loads(resp1.text)), 7)
+        resp4 = self.ntkc.group_remove_members({'group_name': 'group1', 'remove_all': True}, token)
+        resp1 = self.ntkc.group_list_members({'group_name': 'group1'}, token)
+        self.assertEqual(len(json.loads(resp1.text)), 0)
         # 4. adding all data owners
         # 5. adding all data users
 
