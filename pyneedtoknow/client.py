@@ -22,6 +22,7 @@ class PgNeedToKnowClient(object):
                 'table_metadata': '/rpc/table_metadata',
                 'group_create': '/rpc/group_create',
                 'group_add_members': '/rpc/group_add_members',
+                'group_remove_members': '/rpc/group_remove_members',
                 'group_delete': '/rpc/group_delete',
                 'user_register': '/rpc/user_register',
                 'user_delete_data': '/rpc/user_delete_data',
@@ -36,6 +37,7 @@ class PgNeedToKnowClient(object):
             'table_metadata': self.table_metadata,
             'group_create': self.group_create,
             'group_add_members': self.group_add_members,
+            'group_remove_members': self.group_remove_members,
             'group_delete': self.group_delete,
             'user_register': self.user_register,
             'user_delete_data': self.user_delete_data,
@@ -61,7 +63,6 @@ class PgNeedToKnowClient(object):
             raise Exception('Cannot look up client function based on provided method')
         return func(data, token, endpoint)
 
-    # helper functions
 
     def _assert_keys_present(self, required_keys, existing_keys):
         try:
@@ -165,6 +166,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         if not endpoint:
             endpoint = self.api_endpoints['table_describe_columns']
@@ -181,6 +183,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         if not endpoint:
             endpoint = self.api_endpoints['table_metadata']
@@ -197,6 +200,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         pass
 
@@ -209,6 +213,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         pass
 
@@ -241,6 +246,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         pass
 
@@ -253,6 +259,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         pass
 
@@ -265,6 +272,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         if not endpoint:
             endpoint = self.api_endpoints['user_delete_data']
@@ -298,6 +306,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         if not endpoint:
             endpoint = self.api_endpoints['group_create']
@@ -329,6 +338,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         if not endpoint:
             endpoint = self.api_endpoints['group_add_members']
@@ -380,20 +390,60 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         pass
 
 
     def group_remove_members(self, data, token, endpoint=None):
         """
+        Remove members from a group.
+
+        There are three ways of doing this:
+        1. By providing specific user IDs
+        2. By a key-value pair to choose IDs based on metadata
+        3. Removing all current members
+
+        Which one is used, depends on the structure of the data dict.
+
         Parameters
         ----------
         data: dict
+            1. {'group_name': 'group1', 'memberships': {'data_owners': ['1', '2'], 'data_users': ['3', '4']}}, or
+            2. {'group_name': 'group1', 'metadata': {'key': 'country', 'value': 'NO'}}, or
+            3. {'group_name': 'group1', 'remove_all': true}
         token: str
             JWT
         endpoint: str
+
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['group_remove_members']
+        keys = data.keys()
+        if 'memberships' in keys:
+            return self._group_remove_members_members(data, token, endpoint)
+        elif 'metadata' in keys:
+            return self._group_remove_members_metadata(data, token, endpoint)
+        elif 'remove_all' in keys:
+            return self._group_remove_members_all(data, token, endpoint)
+        else:
+            raise Exception('Could not match keys to a method')
+
+
+
+    def _group_remove_members_members(self, data, token, endpoint):
+        self._assert_keys_present(['group_name', 'memberships'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
+
+
+    def _group_remove_members_metadata(self, data, token, endpoint):
+        self._assert_keys_present(['group_name', 'metadata'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
+
+
+    def _group_remove_members_all(self, data, token, endpoint):
+        self._assert_keys_present(['group_name', 'remove_all'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def group_delete(self, data, token, endpoint=None):
@@ -404,6 +454,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         if not endpoint:
             endpoint = self.api_endpoints['group_delete']
@@ -419,6 +470,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         pass
 
@@ -431,6 +483,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         pass
 
@@ -443,6 +496,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         pass
 
@@ -455,6 +509,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         pass
 
@@ -467,6 +522,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         pass
 
@@ -479,6 +535,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         pass
 
@@ -491,6 +548,7 @@ class PgNeedToKnowClient(object):
         token: str
             JWT
         endpoint: str
+
         """
         pass
 
