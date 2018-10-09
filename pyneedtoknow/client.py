@@ -21,6 +21,7 @@ class PgNeedToKnowClient(object):
                 'table_describe_columns': '/rpc/table_describe_columns',
                 'table_metadata': '/rpc/table_metadata',
                 'group_create': '/rpc/group_create',
+                'group_add_members': '/rpc/group_add_members',
                 'group_delete': '/rpc/group_delete',
                 'user_register': '/rpc/user_register',
                 'user_delete_data': '/rpc/user_delete_data',
@@ -34,6 +35,7 @@ class PgNeedToKnowClient(object):
             'table_describe_columns': self.table_describe_columns,
             'table_metadata': self.table_metadata,
             'group_create': self.group_create,
+            'group_add_members': self.group_add_members,
             'group_delete': self.group_delete,
             'user_register': self.user_register,
             'user_delete_data': self.user_delete_data,
@@ -305,74 +307,69 @@ class PgNeedToKnowClient(object):
 
     def group_add_members(self, data, token, endpoint=None):
         """
+        Add members to a group.
+
+        There are 5 methods of doing this:
+        1. By providing specific user IDs
+        2. By providing a key-value pair to choose IDs based on metadata
+        3. Add all registered data owners and data users
+        4. Add all registered data owners
+        5. Add all registered data users
+
+        Which one is used, depends on the structure of the data dict.
+
         Parameters
         ----------
         data: dict
+            1. {'group_name': 'group1', 'memberships': {'data_owners': ['1', '2'], 'data_users': ['3', '4']}}, or
+            2. {'group_name': 'group1', 'metadata': {'key': 'country', 'value': 'NO'}}, or
+            3. {'group_name': 'group1', 'add_all': true}, or
+            4. {'group_name': 'group1', 'add_all_owners': true}, or
+            5. {'group_name': 'group1', 'add_all_users': true}
         token: str
             JWT
         endpoint: str
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['group_add_members']
+        keys = data.keys()
+        if 'memberships' in keys:
+            return self._group_add_members_members(data, token, endpoint)
+        elif 'metadata' in keys:
+            return self._group_add_members_metadata(data, token, endpoint)
+        elif 'add_all' in keys:
+            return self._group_add_members_all(data, token, endpoint)
+        elif 'add_all_owners' in keys:
+            return self._group_add_members_all_owners(data, token, endpoint)
+        elif 'add_all_users' in keys:
+            return self._group_add_members_all_users(data, token, endpoint)
+        else:
+            raise Exception('Could not match keys to a method')
 
 
-    def _group_add_members_members(self, data, token, endpoint=None):
-        """
-        Parameters
-        ----------
-        data: dict
-        token: str
-            JWT
-        endpoint: str
-        """
-        pass
+    def _group_add_members_members(self, data, token, endpoint):
+        self._assert_keys_present(['group_name', 'memberships'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
-    def _group_add_members_metadata(self, data, token, endpoint=None):
-        """
-        Parameters
-        ----------
-        data: dict
-        token: str
-            JWT
-        endpoint: str
-        """
-        pass
+    def _group_add_members_metadata(self, data, token, endpoint):
+        self._assert_keys_present(['group_name', 'metadata'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
-    def _group_add_members_all_owners(self, data, token, endpoint=None):
-        """
-        Parameters
-        ----------
-        data: dict
-        token: str
-            JWT
-        endpoint: str
-        """
-        pass
+    def _group_add_members_all_owners(self, data, token, endpoint):
+        self._assert_keys_present(['group_name', 'add_all_owners'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
-    def _group_add_members_all_users(self, data, token, endpoint=None):
-        """
-        Parameters
-        ----------
-        data: dict
-        token: str
-            JWT
-        endpoint: str
-        """
-        pass
+    def _group_add_members_all_users(self, data, token, endpoint):
+        self._assert_keys_present(['group_name', 'add_all_users'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
-    def _group_add_members_all(self, data, token, endpoint=None):
-        """
-        Parameters
-        ----------
-        data: dict
-        token: str
-            JWT
-        endpoint: str
-        """
-        pass
+    def _group_add_members_all(self, data, token, endpoint):
+        self._assert_keys_present(['group_name', 'add_all'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def group_list_members(self, data, token, endpoint=None):
@@ -497,7 +494,6 @@ class PgNeedToKnowClient(object):
         """
         pass
 
-    # utility functions (not in the SQL API)
 
     def post_data(self, data, token, endpoint):
         return self._http_post_authenticated(endpoint, payload=data, token=token)

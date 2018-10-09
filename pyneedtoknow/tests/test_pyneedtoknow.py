@@ -171,10 +171,16 @@ class TestNtkHttpApi(unittest.TestCase):
         resp2 = self.ntkc.group_create({'group_name': 'group2', 'group_metadata': {}}, token)
         self.assertEqual(resp2.status_code, 200)
 
-    # add members
-    # test access again
-    # add table grants
-    # test access again
+
+    def test_H_group_add_members(self):
+        # test access again
+        pass
+
+
+    def test_I_table_group_access_grant(self):
+        # test access again
+        pass
+
     # get group overview
     # user remove themselves
     # admin removes users
