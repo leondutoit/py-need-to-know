@@ -168,6 +168,7 @@ class TestNtkHttpApi(unittest.TestCase):
 
     def test_H_group_add_and_remove_members(self):
         token = self.ntkc.token(token_type='admin')
+        # 1. using named user IDs
         resp1 = self.ntkc.group_list_members({'group_name': 'group1'}, token)
         self.assertEqual(len(json.loads(resp1.text)), 0)
         named_members = {'group_name': 'group1', 'members': {'memberships': {'data_owners': ['A'], 'data_users': ['X']}}}
@@ -177,6 +178,17 @@ class TestNtkHttpApi(unittest.TestCase):
         resp3 = self.ntkc.group_remove_members(named_members, token)
         resp1 = self.ntkc.group_list_members({'group_name': 'group1'}, token)
         self.assertEqual(len(json.loads(resp1.text)), 0)
+        # 2. using metadata
+        with_metadata = {'group_name': 'group1', 'metadata': {'key': 'country', 'value': 'SE'}}
+        resp4 = self.ntkc.group_add_members(with_metadata, token)
+        resp1 = self.ntkc.group_list_members({'group_name': 'group1'}, token)
+        self.assertEqual(len(json.loads(resp1.text)), 4)
+        resp4 = self.ntkc.group_remove_members(with_metadata, token)
+        resp1 = self.ntkc.group_list_members({'group_name': 'group1'}, token)
+        self.assertEqual(len(json.loads(resp1.text)), 0)
+        # 3. add and removing all
+        # 4. adding all data owners
+        # 5. adding all data users
 
 
     def test_I_table_group_access_grant(self):
