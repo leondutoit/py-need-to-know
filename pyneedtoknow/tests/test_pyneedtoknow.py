@@ -280,8 +280,14 @@ class TestNtkHttpApi(unittest.TestCase):
         for j in defined_users:
             self.assertTrue(j in ids)
 
-    # groups
-    # event_log*
+
+    def test_N_get_groups(self):
+        pass
+
+
+    def test_O_event_log_tables(self):
+        pass
+
 
     def test_Y_group_delete(self):
         token = self.ntkc.token(token_type='admin')
@@ -333,6 +339,8 @@ def main():
         'test_K_user_group_remove',
         'test_L_table_overview',
         'test_M_get_user_registrations',
+        'test_N_get_groups',
+        'test_O_event_log_tables',
         'test_Y_group_delete',
         'test_Z_user_delete',
     ]

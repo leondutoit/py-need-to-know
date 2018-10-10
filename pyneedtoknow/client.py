@@ -35,43 +35,6 @@ class PgNeedToKnowClient(object):
             }
         else:
             self.api_endpoints = api_endpoints
-        self.funcs = {
-            'table_create': self.table_create,
-            'table_describe': self.table_describe,
-            'table_describe_columns': self.table_describe_columns,
-            'table_metadata': self.table_metadata,
-            'table_group_access_grant': self.table_group_access_grant,
-            'table_group_access_revoke': self.table_group_access_revoke,
-            'group_create': self.group_create,
-            'group_add_members': self.group_add_members,
-            'group_list_members': self.group_list_members,
-            'group_remove_members': self.group_remove_members,
-            'group_delete': self.group_delete,
-            'user_register': self.user_register,
-            'user_group_remove': self.user_group_remove,
-            'user_groups': self.user_groups,
-            'user_delete_data': self.user_delete_data,
-            'user_delete': self.user_delete,
-
-        }
-
-    def call(self, method=None, data=None, identity=None, user_type=None):
-        if user_type == 'anon':
-            token = None
-        elif user_type == 'admin':
-            token = self.token(token_type='admin')
-        elif user_type == 'owner':
-            token = self.token(user_id=identity, token_type='owner')
-        elif user_type == 'user':
-            token = self.token(user_id=identity, token_type='user')
-        else:
-            raise Exception('Unknown user type, cannot proceed')
-        try:
-            func = self.funcs[method]
-            endpoint = self.api_endpoints[method]
-        except KeyError:
-            raise Exception('Cannot look up client function based on provided method')
-        return func(data, token, endpoint)
 
 
     def _assert_keys_present(self, required_keys, existing_keys):
@@ -522,6 +485,8 @@ class PgNeedToKnowClient(object):
         -------
         requests.Response
 
+            [{registration_date, user_id, user_name, user_type, user_metadata}]
+
         """
         if not endpoint:
             endpoint = '/user_registrations'
@@ -541,7 +506,9 @@ class PgNeedToKnowClient(object):
         requests.Response
 
         """
-        pass
+        if not endpoint:
+            endpoint = '/groups'
+        return self.get_data(token, endpoint)
 
 
     def get_event_log_user_group_removals(self, token, endpoint=None):
