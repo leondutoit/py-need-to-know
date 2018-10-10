@@ -282,11 +282,22 @@ class TestNtkHttpApi(unittest.TestCase):
 
 
     def test_N_get_groups(self):
-        pass
+        admin_token = self.ntkc.token(token_type='admin')
+        resp = self.ntkc.get_groups(admin_token)
+        self.assertEqual(resp.status_code, 200)
 
 
     def test_O_event_log_tables(self):
-        pass
+        # the details of these views are tested in pg-need-to-know
+        # we only test that we can get all the data
+        admin_token = self.ntkc.token(token_type='admin')
+        for func in [self.ntkc.get_event_log_user_group_removals,
+                     self.ntkc.get_event_log_user_data_deletions,
+                     self.ntkc.get_event_log_data_access,
+                     self.ntkc.get_event_log_access_control,
+                     self.ntkc.get_event_log_data_updates]:
+            resp = func(admin_token)
+            self.assertEqual(resp.status_code, 200)
 
 
     def test_Y_group_delete(self):
