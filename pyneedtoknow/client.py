@@ -15,6 +15,7 @@ class PgNeedToKnowClient(object):
         else:
             self.url = url
         if not api_endpoints:
+            # over-ride this if your proxy has custom routing
             self.api_endpoints = {
                 'table_create': '/rpc/table_create',
                 'table_describe': '/rpc/table_describe',
@@ -32,6 +33,9 @@ class PgNeedToKnowClient(object):
                 'user_groups': '/rpc/user_groups',
                 'user_delete_data': '/rpc/user_delete_data',
                 'user_delete': '/rpc/user_delete',
+                'table_overview': '/table_overview',
+                'user_registrations': '/user_registrations',
+                'groups': '/groups'
             }
         else:
             self.api_endpoints = api_endpoints
@@ -469,7 +473,7 @@ class PgNeedToKnowClient(object):
 
         """
         if not endpoint:
-            endpoint = '/table_overview'
+            endpoint = self.api_endpoints['table_overview']
         return self.get_data(token, endpoint)
 
 
@@ -489,7 +493,7 @@ class PgNeedToKnowClient(object):
 
         """
         if not endpoint:
-            endpoint = '/user_registrations'
+            endpoint = self.api_endpoints['user_registrations']
         return self.get_data(token, endpoint)
 
 
@@ -507,7 +511,7 @@ class PgNeedToKnowClient(object):
 
         """
         if not endpoint:
-            endpoint = '/groups'
+            endpoint = self.api_endpoints['groups']
         return self.get_data(token, endpoint)
 
 
