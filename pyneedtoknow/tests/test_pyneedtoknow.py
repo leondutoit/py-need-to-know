@@ -256,7 +256,17 @@ class TestNtkHttpApi(unittest.TestCase):
         resp4 = self.ntkc.group_remove_members({'group_name': 'group1', 'remove_all': True}, admin_token)
 
 
-    # table overview
+    def test_L_table_overview(self):
+        admin_token = self.ntkc.token(token_type='admin')
+        resp = self.ntkc.get_table_overview(admin_token)
+        overview = json.loads(resp.text)
+        tables = []
+        for i in overview:
+            tables.append(i['table_name'])
+        for j in TABLES.keys():
+            self.assertTrue(j in tables)
+
+
     # user registrations
     # groups
     # event_log*
@@ -309,6 +319,7 @@ def main():
         'test_I_table_group_access_grant_and_revoke',
         'test_J_user_groups',
         'test_K_user_group_remove',
+        'test_L_table_overview',
         'test_Y_group_delete',
         'test_Z_user_delete',
     ]

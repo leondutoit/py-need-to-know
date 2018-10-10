@@ -490,7 +490,22 @@ class PgNeedToKnowClient(object):
         return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
-    def get_table_overview(self, data, token, endpoint=None):
+    def get_table_overview(self, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        data: dict
+        token: str
+            JWT
+        endpoint: str
+
+        """
+        if not endpoint:
+            endpoint = '/table_overview'
+        return self.get_data(token, endpoint)
+
+
+    def get_user_registrations(self, token, endpoint=None):
         """
         Parameters
         ----------
@@ -503,7 +518,7 @@ class PgNeedToKnowClient(object):
         pass
 
 
-    def get_user_registrations(self, data, token, endpoint=None):
+    def get_groups(self, token, endpoint=None):
         """
         Parameters
         ----------
@@ -516,7 +531,7 @@ class PgNeedToKnowClient(object):
         pass
 
 
-    def get_groups(self, data, token, endpoint=None):
+    def get_event_log_user_group_removals(self, token, endpoint=None):
         """
         Parameters
         ----------
@@ -529,7 +544,7 @@ class PgNeedToKnowClient(object):
         pass
 
 
-    def get_event_log_user_group_removals(self, data, token, endpoint=None):
+    def get_event_log_user_data_deletions(self, token, endpoint=None):
         """
         Parameters
         ----------
@@ -542,7 +557,7 @@ class PgNeedToKnowClient(object):
         pass
 
 
-    def get_event_log_user_data_deletions(self, data, token, endpoint=None):
+    def get_event_log_data_access(self, token, endpoint=None):
         """
         Parameters
         ----------
@@ -555,20 +570,7 @@ class PgNeedToKnowClient(object):
         pass
 
 
-    def get_event_log_data_access(self, data, token, endpoint=None):
-        """
-        Parameters
-        ----------
-        data: dict
-        token: str
-            JWT
-        endpoint: str
-
-        """
-        pass
-
-
-    def get_event_log_access_control(self, data, token, endpoint=None):
+    def get_event_log_access_control(self, token, endpoint=None):
         """
         Parameters
         ----------
