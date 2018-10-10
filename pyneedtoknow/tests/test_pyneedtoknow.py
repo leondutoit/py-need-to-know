@@ -298,6 +298,7 @@ class TestNtkHttpApi(unittest.TestCase):
                      self.ntkc.get_event_log_data_updates]:
             resp = func(admin_token)
             self.assertEqual(resp.status_code, 200)
+            self.assertTrue(len(json.loads(resp.text)) > 0)
 
 
     def test_Y_group_delete(self):
