@@ -50,9 +50,11 @@ class TestNtkHttpApi(unittest.TestCase):
     def setUpClass(cls):
         cls.ntkc = PgNeedToKnowClient()
         cls.OWNERS = ['A', 'B', 'E', 'F']
-        cls.OWNERS_METADATA = {'A': {'country': 'SE'}, 'B': {'country': 'SE'}, 'E': {'country': 'NO'}, 'F': {'country': 'NO'}}
+        cls.OWNERS_METADATA = {'A': {'country': 'SE'}, 'B': {'country': 'SE'},
+                               'E': {'country': 'NO'}, 'F': {'country': 'NO'}}
         cls.USERS = ['X', 'Y', 'Z']
-        cls.USERS_METADATA = {'X': {'country': 'SE'}, 'Y': {'country': 'SE'}, 'Z': {'country': 'NO'}}
+        cls.USERS_METADATA = {'X': {'country': 'SE'}, 'Y': {'country': 'SE'},
+                              'Z': {'country': 'NO'}}
 
 
     @classmethod
@@ -141,17 +143,17 @@ class TestNtkHttpApi(unittest.TestCase):
 
     def test_F_default_data_access_policies(self):
         # 1. that data owners can only see their own data
-        # 2. that data users do not have access by default
-        # 3. that admins cannot access data
         self._insert_test_data()
         owner_token_A = self.ntkc.token(user_id='A', token_type='owner')
         resp1 = self.ntkc.get_data(owner_token_A, '/t1')
         data = json.loads(resp1.text)
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]['row_owner'], 'owner_A')
+        # 2. that data users do not have access by default
         user_token_X = self.ntkc.token(user_id='X', token_type='user')
         resp2 = self.ntkc.get_data(user_token_X, '/t1')
         self.assertEqual(resp2.status_code, 403)
+        # 3. that admins cannot access data
         admin_token = self.ntkc.token(token_type='admin')
         resp3 = self.ntkc.get_data(admin_token, '/t1')
         self.assertEqual(len(json.loads(resp3.text)), 0)
@@ -209,13 +211,37 @@ class TestNtkHttpApi(unittest.TestCase):
         self.assertEqual(len(json.loads(resp1.text)), 0)
 
 
-    def test_I_table_group_access_grant(self):
-        # test access again
-        pass
+    def test_I_table_group_access_grant_and_revoke(self):
+        admin_token = self.ntkc.token(token_type='admin')
+        self._insert_test_data()
+        resp1 = self.ntkc.group_add_members({'group_name': 'group1', 'add_all': True}, admin_token)
+        # 1. test that no access
+        user_token_X = self.ntkc.token(user_id='X', token_type='user')
+        resp2 = self.ntkc.get_data(user_token_X, '/t1')
+        self.assertEqual(resp2.status_code, 403)
+        # 2. grant table
+        grant_info = {'table_name': 't1', 'group_name': 'group1', 'grant_type': 'select'}
+        resp3 = self.ntkc.table_group_access_grant(grant_info, admin_token)
+        # 3. test access works
+        resp4 = self.ntkc.get_data(user_token_X, '/t1')
+        self.assertEqual(resp4.status_code, 200)
+        self.assertEqual(len(json.loads(resp.text)), 4)
+        # 4. remove grant
+        resp5 = self.ntkc.table_group_access_revoke(grant_info, admin_token)
+        # 5. test that no access
+        resp6 = self.ntkc.get_data(user_token_X, '/t1')
+        self.assertEqual(resp6.status_code, 403)
+        resp7 = self.ntkc.group_remove_members({'group_name': 'group1', 'remove_all': True}, admin_token)
+        self._delete_test_data()
 
-    # get group overview
+    # get group overview - user_groups
     # user remove themselves
     # admin removes users
+    # informational
+    # table overview
+    # user registrations
+    # groups
+    # event_log*
 
     def test_Y_group_delete(self):
         token = self.ntkc.token(token_type='admin')
@@ -262,6 +288,7 @@ def main():
         'test_F_default_data_access_policies',
         'test_G_group_create',
         'test_H_group_add_and_remove_members',
+        'test_I_table_group_access_grant_and_revoke',
         'test_Y_group_delete',
         'test_Z_user_delete',
     ]

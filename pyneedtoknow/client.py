@@ -20,6 +20,8 @@ class PgNeedToKnowClient(object):
                 'table_describe': '/rpc/table_describe',
                 'table_describe_columns': '/rpc/table_describe_columns',
                 'table_metadata': '/rpc/table_metadata',
+                'table_group_access_grant': '/rpc/table_group_access_grant',
+                'table_group_access_revoke': '/rpc/table_group_access_revoke',
                 'group_create': '/rpc/group_create',
                 'group_add_members': '/rpc/group_add_members',
                 'group_list_members': '/rpc/group_list_members',
@@ -36,6 +38,8 @@ class PgNeedToKnowClient(object):
             'table_describe': self.table_describe,
             'table_describe_columns': self.table_describe_columns,
             'table_metadata': self.table_metadata,
+            'table_group_access_grant': self.table_group_access_grant,
+            'table_group_access_revoke': self.table_group_access_revoke,
             'group_create': self.group_create,
             'group_add_members': self.group_add_members,
             'group_list_members': self.group_list_members,
@@ -204,7 +208,10 @@ class PgNeedToKnowClient(object):
         endpoint: str
 
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['table_group_access_grant']
+        self._assert_keys_present(['table_name', 'group_name', 'grant_type'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def table_group_access_revoke(self, data, token, endpoint=None):
@@ -217,7 +224,10 @@ class PgNeedToKnowClient(object):
         endpoint: str
 
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['table_group_access_revoke']
+        self._assert_keys_present(['table_name', 'group_name', 'grant_type'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def user_register(self, data, token=None, endpoint=None):
