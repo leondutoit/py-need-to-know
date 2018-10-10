@@ -225,7 +225,7 @@ class TestNtkHttpApi(unittest.TestCase):
         # 3. test access works
         resp4 = self.ntkc.get_data(user_token_X, '/t1')
         self.assertEqual(resp4.status_code, 200)
-        self.assertEqual(len(json.loads(resp.text)), 4)
+        self.assertEqual(len(json.loads(resp4.text)), 4)
         # 4. remove grant
         resp5 = self.ntkc.table_group_access_revoke(grant_info, admin_token)
         # 5. test that no access
