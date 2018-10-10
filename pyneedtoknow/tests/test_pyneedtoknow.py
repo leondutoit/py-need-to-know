@@ -234,10 +234,28 @@ class TestNtkHttpApi(unittest.TestCase):
         resp7 = self.ntkc.group_remove_members({'group_name': 'group1', 'remove_all': True}, admin_token)
         self._delete_test_data()
 
-    # get group overview - user_groups
-    # user remove themselves
-    # admin removes users
-    # informational
+
+    def test_J_user_groups(self):
+        admin_token = self.ntkc.token(token_type='admin')
+        owner_token_A = self.ntkc.token(user_id='A', token_type='owner')
+        resp1 = self.ntkc.group_add_members({'group_name': 'group1', 'add_all': True}, admin_token)
+        resp2 = self.ntkc.user_groups({'user_id': 'A', 'user_type': 'data_owner'}, admin_token)
+        self.assertEqual(json.loads(resp2.text)[0]['group_name'], 'group1')
+        resp3 = self.ntkc.user_groups({'user_type': 'data_owner'}, owner_token_A)
+        self.assertEqual(json.loads(resp3.text)[0]['group_name'], 'group1')
+        resp4 = self.ntkc.group_remove_members({'group_name': 'group1', 'remove_all': True}, admin_token)
+
+
+    def test_K_user_group_remove(self):
+        admin_token = self.ntkc.token(token_type='admin')
+        owner_token_A = self.ntkc.token(user_id='A', token_type='owner')
+        resp1 = self.ntkc.group_add_members({'group_name': 'group1', 'add_all': True}, admin_token)
+        resp2 = self.ntkc.user_group_remove({'group_name': 'group1'}, owner_token_A)
+        resp3 = self.ntkc.user_groups({'user_type': 'data_owner'}, owner_token_A)
+        self.assertEqual(len(json.loads(resp3.text)), 0)
+        resp4 = self.ntkc.group_remove_members({'group_name': 'group1', 'remove_all': True}, admin_token)
+
+
     # table overview
     # user registrations
     # groups
@@ -289,6 +307,8 @@ def main():
         'test_G_group_create',
         'test_H_group_add_and_remove_members',
         'test_I_table_group_access_grant_and_revoke',
+        'test_J_user_groups',
+        'test_K_user_group_remove',
         'test_Y_group_delete',
         'test_Z_user_delete',
     ]

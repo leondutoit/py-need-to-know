@@ -28,6 +28,8 @@ class PgNeedToKnowClient(object):
                 'group_remove_members': '/rpc/group_remove_members',
                 'group_delete': '/rpc/group_delete',
                 'user_register': '/rpc/user_register',
+                'user_group_remove': '/rpc/user_group_remove',
+                'user_groups': '/rpc/user_groups',
                 'user_delete_data': '/rpc/user_delete_data',
                 'user_delete': '/rpc/user_delete',
             }
@@ -46,6 +48,8 @@ class PgNeedToKnowClient(object):
             'group_remove_members': self.group_remove_members,
             'group_delete': self.group_delete,
             'user_register': self.user_register,
+            'user_group_remove': self.user_group_remove,
+            'user_groups': self.user_groups,
             'user_delete_data': self.user_delete_data,
             'user_delete': self.user_delete,
 
@@ -255,12 +259,16 @@ class PgNeedToKnowClient(object):
         Parameters
         ----------
         data: dict
+            {'group_name': 'group1'}
         token: str
             JWT
         endpoint: str
 
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['user_group_remove']
+        self._assert_keys_present(['group_name'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def user_groups(self, data, token, endpoint=None):
@@ -268,12 +276,16 @@ class PgNeedToKnowClient(object):
         Parameters
         ----------
         data: dict
+            {'user_id': <id, optional key>, 'user_type': <data_owner,data_user>}
         token: str
             JWT
         endpoint: str
 
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['user_groups']
+        self._assert_keys_present(['user_type'], data.keys())
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
 
 
     def user_delete_data(self, data, token, endpoint=None):
