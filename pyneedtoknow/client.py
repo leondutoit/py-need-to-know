@@ -35,7 +35,12 @@ class PgNeedToKnowClient(object):
                 'user_delete': '/rpc/user_delete',
                 'table_overview': '/table_overview',
                 'user_registrations': '/user_registrations',
-                'groups': '/groups'
+                'groups': '/groups',
+                'event_log_user_group_removals': '/event_log_user_group_removals',
+                'event_log_user_data_deletions': '/event_log_user_data_deletions',
+                'event_log_data_access': '/event_log_data_access',
+                'event_log_access_control': '/event_log_access_control',
+                'event_log_data_updates': '/event_log_data_updates',
             }
         else:
             self.api_endpoints = api_endpoints
@@ -509,6 +514,8 @@ class PgNeedToKnowClient(object):
         -------
         requests.Response
 
+            [{group_name, group_metadata}]
+
         """
         if not endpoint:
             endpoint = self.api_endpoints['groups']
@@ -527,8 +534,12 @@ class PgNeedToKnowClient(object):
         -------
         requests.Response
 
+            [{removal_date, user_name, group_name}]
+
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['event_log_user_group_removals']
+        return self.get_data(token, endpoint)
 
 
     def get_event_log_user_data_deletions(self, token, endpoint=None):
@@ -543,8 +554,12 @@ class PgNeedToKnowClient(object):
         -------
         requests.Response
 
+            [{user_name, request_date}]
+
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['event_log_user_data_deletions']
+        return self.get_data(token, endpoint)
 
 
     def get_event_log_data_access(self, token, endpoint=None):
@@ -559,8 +574,12 @@ class PgNeedToKnowClient(object):
         -------
         requests.Response
 
+            [{request_time, data_user, data_owner}]
+
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['event_log_data_access']
+        return self.get_data(token, endpoint)
 
 
     def get_event_log_access_control(self, token, endpoint=None):
@@ -575,8 +594,32 @@ class PgNeedToKnowClient(object):
         -------
         requests.Response
 
+            [{id, event_time, event_type, group_name, target}]
+
         """
-        pass
+        if not endpoint:
+            endpoint = self.api_endpoints['event_log_access_control']
+        return self.get_data(token, endpoint)
+
+
+    def get_event_log_data_updates(self, token, endpoint=None):
+        """
+        Parameters
+        ----------
+        token: str
+            JWT
+        endpoint: str
+
+        Returns
+        -------
+        requests.Response
+
+            [{updated_time, updated_by, table_name, row_id, column_name, old_data, new_data, query}]
+
+        """
+        if not endpoint:
+            endpoint = self.api_endpoints['event_log_data_updates']
+        return self.get_data(token, endpoint)
 
 
     def post_data(self, data, token, endpoint):
