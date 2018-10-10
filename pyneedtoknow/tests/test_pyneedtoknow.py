@@ -267,7 +267,19 @@ class TestNtkHttpApi(unittest.TestCase):
             self.assertTrue(j in tables)
 
 
-    # user registrations
+    def test_M_get_user_registrations(self):
+        admin_token = self.ntkc.token(token_type='admin')
+        resp  = self.ntkc.get_user_registrations(admin_token)
+        users = json.loads(resp.text)
+        ids = []
+        for i in users:
+            ids.append(i['user_id'])
+        defined_users = []
+        defined_users.extend(self.OWNERS)
+        defined_users.extend(self.USERS)
+        for j in defined_users:
+            self.assertTrue(j in ids)
+
     # groups
     # event_log*
 
@@ -320,6 +332,7 @@ def main():
         'test_J_user_groups',
         'test_K_user_group_remove',
         'test_L_table_overview',
+        'test_M_get_user_registrations',
         'test_Y_group_delete',
         'test_Z_user_delete',
     ]

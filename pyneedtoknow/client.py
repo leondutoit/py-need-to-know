@@ -494,10 +494,15 @@ class PgNeedToKnowClient(object):
         """
         Parameters
         ----------
-        data: dict
         token: str
             JWT
         endpoint: str
+
+        Returns
+        -------
+        requests.Response
+
+            [{table_name, table_description, groups_with_access}]
 
         """
         if not endpoint:
@@ -509,23 +514,31 @@ class PgNeedToKnowClient(object):
         """
         Parameters
         ----------
-        data: dict
         token: str
             JWT
         endpoint: str
 
+        Returns
+        -------
+        requests.Response
+
         """
-        pass
+        if not endpoint:
+            endpoint = '/user_registrations'
+        return self.get_data(token, endpoint)
 
 
     def get_groups(self, token, endpoint=None):
         """
         Parameters
         ----------
-        data: dict
         token: str
             JWT
         endpoint: str
+
+        Returns
+        -------
+        requests.Response
 
         """
         pass
@@ -535,10 +548,13 @@ class PgNeedToKnowClient(object):
         """
         Parameters
         ----------
-        data: dict
         token: str
             JWT
         endpoint: str
+
+        Returns
+        -------
+        requests.Response
 
         """
         pass
@@ -548,10 +564,13 @@ class PgNeedToKnowClient(object):
         """
         Parameters
         ----------
-        data: dict
         token: str
             JWT
         endpoint: str
+
+        Returns
+        -------
+        requests.Response
 
         """
         pass
@@ -561,10 +580,13 @@ class PgNeedToKnowClient(object):
         """
         Parameters
         ----------
-        data: dict
         token: str
             JWT
         endpoint: str
+
+        Returns
+        -------
+        requests.Response
 
         """
         pass
@@ -574,10 +596,13 @@ class PgNeedToKnowClient(object):
         """
         Parameters
         ----------
-        data: dict
         token: str
             JWT
         endpoint: str
+
+        Returns
+        -------
+        requests.Response
 
         """
         pass
