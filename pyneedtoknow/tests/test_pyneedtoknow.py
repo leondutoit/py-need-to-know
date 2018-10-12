@@ -342,6 +342,12 @@ class TestNtkHttpApi(unittest.TestCase):
 @click.option('--scalability', is_flag=True, default=False)
 @click.option('--url', default=None)
 def main(correctness, scalability, url):
+    if not (correctness or scalability):
+        print "unrecognised argument"
+        print 'need either "--correctness" or "--scalability"'
+        print "you can set the URL using --url"
+        print "e.g. --url api.needtoknow.com/v1"
+        return
     global URL
     URL = url
     runner = unittest.TextTestRunner()
@@ -374,10 +380,6 @@ def main(correctness, scalability, url):
         suite.append(unittest.TestSuite(map(TestNtkHttpApi, correctness_tests)))
     elif scalability:
         suite.append(unittest.TestSuite(map(TestNtkHttpApi, scalability_tests)))
-    else:
-        print "unrecognised argument"
-        print 'need either "--correctness" or "--scalability"'
-        return
     map(runner.run, suite)
     return
 
