@@ -3,6 +3,8 @@ import json
 from sys import argv
 import unittest
 
+import click
+
 from ..client import PgNeedToKnowClient
 
 TABLES = {
@@ -48,6 +50,8 @@ class TestNtkHttpApi(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # todo get the URL from cmd line param
+        #cls.ntkc = PgNeedToKnowClient(url='https://test.api.tsd.usit.no/v1/p01/ntk')
         cls.ntkc = PgNeedToKnowClient()
         cls.OWNERS = ['A', 'B', 'E', 'F']
         cls.OWNERS_METADATA = {'A': {'country': 'SE'}, 'B': {'country': 'SE'},
@@ -232,6 +236,8 @@ class TestNtkHttpApi(unittest.TestCase):
         resp6 = self.ntkc.get_data(user_token_X, '/t1')
         self.assertEqual(resp6.status_code, 403)
         resp7 = self.ntkc.group_remove_members({'group_name': 'group1', 'remove_all': True}, admin_token)
+        # 6. test update policy
+        # perform an update
         self._delete_test_data()
 
 
@@ -298,6 +304,7 @@ class TestNtkHttpApi(unittest.TestCase):
                      self.ntkc.get_event_log_data_updates]:
             resp = func(admin_token)
             self.assertEqual(resp.status_code, 200)
+            # fails on update since we do not do one atm
             self.assertTrue(len(json.loads(resp.text)) > 0)
 
 
@@ -329,12 +336,10 @@ class TestNtkHttpApi(unittest.TestCase):
         self.delete_many(10000, 'data_owner', token)
         self.delete_many(100, 'data_user', token)
 
-
-def main():
-    if len(argv) < 2:
-        print 'not enough arguments'
-        print 'need either "--correctness" or "--scalability"'
-        return
+@click.command()
+@click.option('--correctness', is_flag=True, default=False)
+@click.option('--scalability', is_flag=True, default=False)
+def main(correctness, scalability):
     runner = unittest.TextTestRunner()
     suite = []
     correctness_tests = [
@@ -361,9 +366,9 @@ def main():
         'test_ZB_delete_many',
     ]
     correctness_tests.sort()
-    if argv[1] == '--correctness':
+    if correctness:
         suite.append(unittest.TestSuite(map(TestNtkHttpApi, correctness_tests)))
-    elif argv[1] == '--scalability':
+    elif scalability:
         suite.append(unittest.TestSuite(map(TestNtkHttpApi, scalability_tests)))
     else:
         print "unrecognised argument"
