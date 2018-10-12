@@ -633,3 +633,21 @@ class PgNeedToKnowClient(object):
     def get_data(self, token, endpoint):
         headers = {'Authorization': 'Bearer ' + token}
         return self._http_get(endpoint, headers)
+
+
+    def publish_data(self, data, recipient, token, endpoint):
+        """
+        Make data available to a specific data owner.
+
+        Parameters
+        ----------
+        data: dict
+        recipient: str
+            user_id
+        token: str
+            JWT
+        endpoint: str
+            API endpoint
+        """
+        user_name = 'owner_' + recipient
+        return self._http_post_authenticated(endpoint, payload=data, token=token)
