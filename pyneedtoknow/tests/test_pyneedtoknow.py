@@ -238,7 +238,16 @@ class TestNtkHttpApi(unittest.TestCase):
         self.assertEqual(resp6.status_code, 403)
         resp7 = self.ntkc.group_remove_members({'group_name': 'group1', 'remove_all': True}, admin_token)
         # 6. test update policy
-        # perform an update
+        update_grant = {'table_name': 't1', 'group_name': 'group1', 'grant_type': 'update'}
+        insert_grant = {'table_name': 't1', 'group_name': 'group1', 'grant_type': 'insert'}
+        resp8 = self.ntkc.table_group_access_grant(update_grant, admin_token)
+        resp9 = self.ntkc.table_group_access_grant(insert_grant, admin_token)
+        # data intended to be published - we set the owner
+        self.ntkc.post_data({'row_owner': 'owner_A', 'age': 40}, user_token_X, '/t1')
+        self.ntkc.patch_data({'age': 30}, user_token_X, '/t1?row_originator=eq.user_X')
+        self.ntkc.user_delete_data({}, user_token_X)
+        resp10 = self.ntkc.table_group_access_revoke(update_grant, admin_token)
+        resp11 = self.ntkc.table_group_access_revoke(insert_grant, admin_token)
         self._delete_test_data()
 
 
