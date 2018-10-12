@@ -50,9 +50,10 @@ class TestNtkHttpApi(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # todo get the URL from cmd line param
-        #cls.ntkc = PgNeedToKnowClient(url='https://test.api.tsd.usit.no/v1/p01/ntk')
-        cls.ntkc = PgNeedToKnowClient()
+        if not URL:
+            cls.ntkc = PgNeedToKnowClient()
+        else:
+            cls.ntkc = PgNeedToKnowClient(url=URL)
         cls.OWNERS = ['A', 'B', 'E', 'F']
         cls.OWNERS_METADATA = {'A': {'country': 'SE'}, 'B': {'country': 'SE'},
                                'E': {'country': 'NO'}, 'F': {'country': 'NO'}}
@@ -339,7 +340,10 @@ class TestNtkHttpApi(unittest.TestCase):
 @click.command()
 @click.option('--correctness', is_flag=True, default=False)
 @click.option('--scalability', is_flag=True, default=False)
-def main(correctness, scalability):
+@click.option('--url', default=None)
+def main(correctness, scalability, url):
+    global URL
+    URL = url
     runner = unittest.TextTestRunner()
     suite = []
     correctness_tests = [
