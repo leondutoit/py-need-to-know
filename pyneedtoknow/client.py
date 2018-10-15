@@ -650,4 +650,5 @@ class PgNeedToKnowClient(object):
             API endpoint
         """
         user_name = 'owner_' + recipient
+        data['row_owner'] = user_name
         return self._http_post_authenticated(endpoint, payload=data, token=token)

@@ -243,7 +243,7 @@ class TestNtkHttpApi(unittest.TestCase):
         resp8 = self.ntkc.table_group_access_grant(update_grant, admin_token)
         resp9 = self.ntkc.table_group_access_grant(insert_grant, admin_token)
         # data intended to be published - we set the owner
-        self.ntkc.post_data({'row_owner': 'owner_A', 'age': 40}, user_token_X, '/t1')
+        self.ntkc.publish_data({'age': 40}, 'A', user_token_X, '/t1')
         self.ntkc.patch_data({'age': 30}, user_token_X, '/t1?row_originator=eq.user_X')
         self.ntkc.user_delete_data({}, user_token_X)
         resp10 = self.ntkc.table_group_access_revoke(update_grant, admin_token)
