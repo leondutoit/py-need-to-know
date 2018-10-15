@@ -574,7 +574,7 @@ class PgNeedToKnowClient(object):
         -------
         requests.Response
 
-            [{request_time, data_user, data_owner}]
+            [{request_time, row_id, data_user, data_owner}]
 
         """
         if not endpoint:
@@ -614,7 +614,7 @@ class PgNeedToKnowClient(object):
         -------
         requests.Response
 
-            [{updated_time, updated_by, table_name, row_id, column_name, old_data, new_data, query}]
+            [{updated_time, updated_by, table_name, row_id, column_name, old_data, new_data}]
 
         """
         if not endpoint:
